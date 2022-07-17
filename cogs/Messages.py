@@ -1,4 +1,5 @@
 from discord.ext import commands
+import discord
 import requests
 from datetime import datetime, timedelta
 
@@ -23,10 +24,7 @@ def get_dog():
 class Messages(commands.Cog):
   def __init__(self, client):
     self.client = client
-
-  @commands.command()
-  async def prueba(self, ctx):
-    await ctx.send(ctx.guild.id)
+    self.color = 0x28B4FF
 
   @commands.command(name="time", aliases=["now", "dt", "datetime", "date", "ts", "timestamp"])
   async def time(self, ctx):
@@ -57,27 +55,40 @@ class Messages(commands.Cog):
 
   @commands.command()
   async def help(self, ctx):
-    help = """
-```
-HELP:
-Prefix: $
-Commands:
-  + ping -> pong!
-  + cat -> send image of a cat
-  + dog -> send image of a dog
-  + quote -> send quote
-Music commands:
-  + connect | join -> bot joins channel
-  + disconnect | leave -> bot leaves channel
-  + play | p | add [url] -> play url song
-  + pause -> pauses song
-  + resume -> resumes song
-  + queue | q -> shows queue
-  + status | stats -> Bool is_playing
-  + clear | cls | kill -> clears all queue
-  + next | skip -> skips song to the next
-Extensions:
-  + kisslist help -> commands for kisslist extension
-```
+    commands = """ping -> pong!
+cat -> random image of cat
+dog -> random image of dog
+quote -> random quote
+time | dt | timestamp | ts | date | now | datetime -> LV and Lima time
+help -> get commands help
 """
-    await ctx.send(help)
+    music_commands = """connect | join -> bot joins channel
+disconnect | leave -> bot leaves channel
+play | p | add [url] -> play url song
+pause -> pauses song
+resume -> resumes song
+queue | q -> shows queue
+status | stats -> Bool is_playing
+clear | cls | kill -> clears all queue
+next | skip -> skips song to the next
+"""
+    help_extensions = """kisslist help -> commands for kisslist extension
+"""
+    embed = discord.Embed(title=f"HELP LIST", color=self.color)
+    embed.add_field(name="Prefix", value="`$`", inline=True)
+    embed.add_field(name="Commands", value=f"`{commands}`", inline=False)
+    embed.add_field(name="Music Commands", value=f"`{music_commands}`", inline=False)
+    embed.add_field(name="Extensions", value=f"`{help_extensions}`", inline=False)
+    
+    await ctx.send(embed=embed)
+
+  @commands.command()
+  async def prueba(self, ctx):
+    embed = discord.Embed(title=f"{ctx.author.name}'s")
+
+    embed.add_field(name="field1:", value="`15`", inline=False)
+    embed.add_field(name="field2:", value="16", inline=False)
+
+    embed.set_footer(text="some text")
+    await ctx.send(embed=embed)
+  
