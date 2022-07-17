@@ -1,12 +1,26 @@
 from discord.ext import commands
-from functions import (
-  get_quote,
-  get_cat,
-  get_dog
-)
+import requests
 from datetime import datetime, timedelta
 
-class Mensajes(commands.Cog):
+def get_quote():
+  response = requests.get("https://zenquotes.io/api/random").json()
+  quote = response[0]['q'] + " -" + response[0]['a']
+  return quote
+
+def get_cat():
+  response = requests.get("https://api.thecatapi.com/v1/images/search").json()
+  image_link = response[0]["url"]
+  return image_link
+
+def get_dog():
+  response = requests.get("https://dog.ceo/api/breeds/image/random").json()
+  if response["status"]:
+    image_link = response["message"]
+    return image_link
+  else:
+    return "Something went wrong!"
+
+class Messages(commands.Cog):
   def __init__(self, client):
     self.client = client
 
@@ -66,10 +80,4 @@ Extensions:
   + kisslist help -> commands for kisslist extension
 ```
 """
-
     await ctx.send(help)
-
-
-def setup(client):
-  client.add_cog(Mensajes(client))
-

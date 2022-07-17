@@ -1,6 +1,7 @@
 import discord
 from discord.ext import commands
 import youtube_dl
+from datetime import datetime, timedelta
 
 class Music(commands.Cog):
   def __init__(self, client):
@@ -17,8 +18,13 @@ class Music(commands.Cog):
   def play_next(self, guild_id):
     if len(self.servers[guild_id]["queue"]) > 0:
       url_m = self.servers[guild_id]["queue"][0]["url"]
+      title = self.servers[guild_id]["queue"][0]["title"]
       self.servers[guild_id]["queue"].pop(0)
       self.servers[guild_id]["vc"].play(discord.FFmpegOpusAudio(url_m, **self.FFMPEG_OPTIONS), after=lambda e: self.play_next(guild_id))
+      with open("logs/songs.csv", "a") as log:
+        text = ','.join([title, str(datetime.today() - timedelta(hours=5)), url_m])
+        text += '\n'
+        log.write(text)
 
   def check_guild_id(self, guild_id):
     if guild_id not in self.servers.keys():
@@ -59,11 +65,13 @@ class Music(commands.Cog):
       await ctx.send("Bot not in voice channel")
 
   @commands.command(name="play", aliases=["p", "add"])
-  async def play(self, ctx, url):
+  async def play(self, ctx, url=None):
     if ctx.author.voice is None:
       await ctx.send("You're not in a voice channel!")
     elif ctx.voice_client is None:
       await ctx.send("Bot is not in a voice channel!")
+    elif url is None:
+      await ctx.send("You must put a valid url!")
     else:
       YDL_OPTIONS = {"format":"bestaudio"}
       with youtube_dl.YoutubeDL(YDL_OPTIONS) as ydl:
@@ -88,8 +96,13 @@ class Music(commands.Cog):
 
         if ctx.voice_client.is_playing() == False:
           url_m = self.servers[guild_id]["queue"][0]["url"]
+          title = self.servers[guild_id]["queue"][0]["title"]
           self.servers[guild_id]["queue"].pop(0)
           self.servers[guild_id]["vc"].play(discord.FFmpegOpusAudio(url_m, **self.FFMPEG_OPTIONS), after=lambda e: self.play_next(guild_id))
+          with open("logs/songs.csv", "a") as log:
+            text = ','.join([title, str(datetime.today() - timedelta(hours=5)), url_m])
+            text += '\n'
+            log.write(text)
       else:
         await ctx.send("You must put a valid url!")
 
@@ -160,7 +173,3 @@ class Music(commands.Cog):
       else:
         self.servers[guild_id]["vc"].stop()
         await ctx.send("No more song in queue to play.")
-
-      
-def setup(client):
-  client.add_cog(Music(client))

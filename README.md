@@ -1,6 +1,8 @@
-# To Run de Bot:
+# Foca Bot
 
-In command line:
+Foca Bot is a discord bot primarily for music.
+
+## Installation
 
 ```bash
 npm install ffmpeg-static
@@ -10,3 +12,6 @@ npm install ffmpeg-static
 export PATH="$PWD/node_modules/ffmpeg-static:$PATH"
 python main.py
 ```
+
+## License
+[MIT](https://choosealicense.com/licenses/mit/)

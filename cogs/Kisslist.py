@@ -202,6 +202,3 @@ Subcommands:
 
       else:
         await ctx.send("Command Not Found! - commands")
-
-def setup(client):
-  client.add_cog(Kisslist(client))
