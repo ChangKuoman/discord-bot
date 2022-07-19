@@ -320,6 +320,17 @@ optional = false
 python-versions = "*"
 
 [[package]]
+name = "youtube-search"
+version = "2.1.1"
+description = "Perform YouTube video searches without the API"
+category = "main"
+optional = false
+python-versions = "*"
+
+[package.dependencies]
+requests = "*"
+
+[[package]]
 name = "zipp"
 version = "3.8.0"
 description = "Backport of pathlib-compatible object wrapper for zip files"
@@ -334,7 +345,7 @@ testing = ["pytest (>=6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytest-
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.8.0,<3.9"
-content-hash = "1c7a2d6a0b00eba2869a70b7b1db40cc8b847f865a81313ba4dea8941593b0da"
+content-hash = "a9bdb68c38b28af1a42e6072020b6c82c7153c321584e2926cc8ee404da3b183"
 
 [metadata.files]
 aiohttp = []
@@ -365,4 +376,5 @@ urllib3 = []
 werkzeug = []
 yarl = []
 youtube-dl = []
+youtube-search = []
 zipp = []
