@@ -1,204 +1,124 @@
 from discord.ext import commands
 from replit import db
+from discord import Embed
+
+if "kisslist" not in db.keys():
+  db["kisslist"] = {}
 
 class Kisslist(commands.Cog):
-  if "kisslist" not in db.keys():
-    db["kisslist"] = {}
-  
+  """Commands for kisslist related stuff"""
+
   def __init__(self, client):
-    self.client = client
-    self.numbers = {
-      "0": "0️⃣",
-      "1": "1️⃣",
-      "2": "2️⃣",
-      "3": "3️⃣",
-      "4": "4️⃣",
-      "5": "5️⃣",
-      "6": "6️⃣",
-      "7": "7️⃣",
-      "8": "8️⃣",
-      "9": "9️⃣"
+    self.CLIENT = client
+    self.COLOR = 0xFF5F13
+    self.NUMBERS = {
+      "0": "0️⃣", "1": "1️⃣", "2": "2️⃣", "3": "3️⃣", "4": "4️⃣",
+      "5": "5️⃣", "6": "6️⃣", "7": "7️⃣", "8": "8️⃣", "9": "9️⃣"
+    }
+    self.LETTERS = {
+      "A": "🇦", "B": "🇧", "C": "🇨", "D": "🇩", "E": "🇪", "F": "🇫",
+      "G": "🇬", "H": "🇭", "I": "🇮", "J": "🇯", "K": "🇰", "L": "🇱",
+      "M": "🇲", "N": "🇳", "O": "🇴", "P": "🇵", "Q": "🇶", "R": "🇷",
+      "S": "🇸", "T": "🇹", "U": "🇺", "V": "🇻", "W": "🇼", "X": "🇽",
+      "Y": "🇾", "Z": "🇿"
     }
 
-  # checks author in kisslist db
-  def check_author(self, author_id):
+  @commands.group(name="kisslist", aliases=["kl"], invoke_without_command=False, help="Base command for kisslist group")
+  async def kisslist(self, ctx):
+    author_id = str(ctx.author.id)
     if author_id not in db["kisslist"].keys():
       list = {}
       for i in range(65, 91):
         list[chr(i)] = 0
       db["kisslist"][author_id] = list
-
-  # shows kisslist
-  def show(self, author_id, author_name):
-    self.check_author(author_id)
-
-    list = author_name + " KISSLIST:\n"
-    for key, value in db["kisslist"][author_id].items():
-      list += key + " - "
-      if value:
-        list += "✅"
-      else:
-        list += "❌"
-      list += '\n'
-    return list
-
-  # shows all kisslist
-  def show_all(self, author_id, author_name):
-    self.check_author(author_id)
-
-    list = author_name + " KISSLIST:\n"
-    for key, value in db["kisslist"][author_id].items():
-      list += key + " - "
-      if value:
-        for i in range(value):
-          list += "✅"
-      else:
-        list += "❌"
-      list += '\n'
-    return list
-
-  # shows numbers kisslist
-  def show_number(self, author_id, author_name):
-    self.check_author(author_id)
-
-    list = author_name + " KISSLIST:\n"
-    for key, value in db["kisslist"][author_id].items():
-      list += key + " - "
-      for number in str(value):
-        list += self.numbers[number]
-      list += '\n'
-    return list
-    
-  #delete kisslist
-  def delete(self, author_id):    
-    if author_id in db["kisslist"]:
-      del db["kisslist"][author_id]
-      return "Kisslist deleted"
+  
+  @kisslist.command(name="show", help="Sends kisslist [None | all | number | numbers]")
+  async def kisslist_show(self, ctx, msg=None):
+    author_id = str(ctx.author.id)
+    author_name = str(ctx.author.display_name)
+    description = ""
+    if msg is None:
+      for key, value in db["kisslist"][author_id].items():
+        emoji = "✅" if value else "❌"
+        description += f"{self.LETTERS[key]}: {emoji}\n"
+    elif msg == "all":
+      for key, value in db["kisslist"][author_id].items():
+        emoji = "✅"*value if value else "❌"
+        description += f"{self.LETTERS[key]}: {emoji}\n"
+    elif msg in ["number", "numbers"]:
+      for key, value in db["kisslist"][author_id].items():
+        emoji = ""
+        for number in str(value):
+          emoji += self.NUMBERS[number]
+        description += f"{self.LETTERS[key]}: {emoji}\n"
     else:
-      return "No kisslist was found to delete"
+      description = "Kisslist show command not found!"
+    embed = Embed(
+      title=f"{author_name}'s KISSLIST",
+      description=description,
+      color=self.COLOR
+    )
+    await ctx.send(embed=embed)
 
-  #creates kisslist
-  def create(self, author_id):
-    if author_id not in db["kisslist"].keys():
-      self.check_author(author_id)
-      return "Kisslist created"
-    else:
-      return "Kisslist already in database"
+  @kisslist.command(name="clear", help="Clears kisslist")
+  async def kisslist_clear(self, ctx):
+    author_id = str(ctx.author.id)
+    del db["kisslist"][author_id]
+    embed = Embed(
+      description="Kisslist cleared",
+      color=self.COLOR
+    )
+    await ctx.send(embed=embed)
 
-  # add letters to kisslist
-  def add(self, author_id, words):
-    self.check_author(author_id)
-    added = ""
-    
-    for word in words:
+  @kisslist.command(name="add", help="Add letter(s) to kisslist [letter(s)]")
+  async def kisslist_add(self, ctx, *msg):
+    author_id = str(ctx.author.id)
+    description = ""
+    for word in msg:
       letter = str(word).upper()[0]
       if ord(letter) in range(65, 91):
         db["kisslist"][author_id][letter] += 1
-        added += "Letter " + letter + " added to kisslist\n"
-    return added
+        description += "Letter " + letter + " added to kisslist\n"
+    if description == "":
+      description = "No letters where added."
+    embed = Embed(
+      description=description,
+      color=self.COLOR
+    )
+    await ctx.send(embed=embed)
 
-  # remove letters from kisslist
-  def remove(self, author_id, words):
-    if author_id not in db["kisslist"].keys():
-      self.check_author(author_id)
-    else:
-      removed = ""
-      for word in words:
-        letter = str(word).upper()[0]
-        if ord(letter) in range(65, 91):
-          if db["kisslist"][author_id][letter] - 1 >= 0:
-            db["kisslist"][author_id][letter] -= 1
-            removed += "Letter " + letter + " removed from kisslist\n"
-    return removed
+  @kisslist.command(name="remove", aliases=["delete"], help="Remove letter(s) from kisslist [letter(s)]")
+  async def kisslist_remove(self, ctx, *msg):
+    author_id = str(ctx.author.id)
+    description = ""
+    for word in msg:
+      letter = str(word).upper()[0]
+      if ord(letter) in range(65, 91):
+        if db["kisslist"][author_id][letter] - 1 >= 0:
+          db["kisslist"][author_id][letter] -= 1
+          description += "Letter " + letter + " removed from kisslist\n"
+    if description == "":
+      description = "No letters where removed."
+    embed = Embed(
+      description=description,
+      color=self.COLOR
+    )
+    await ctx.send(embed=embed)
 
-  # set letter to number
-  def set(self, author_id, letter, number):
-    self.check_author(author_id)
+  @kisslist.command(name="set", help="Sets letter to number [letter][number]")
+  async def kisslist_set(self, ctx, letter, number):
+    author_id = str(ctx.author.id)
     letter = str(letter).upper()[0]
     number = str(number)
     if ord(letter) not in range(65, 91):
-      return "No valid letter"
-    if number.isdigit() == False:
-      return "No valid number"
-    number = int(number)
-    if number < 0:
-      return "No valid number"
-    db["kisslist"][author_id][letter] = number
-    return "Letter " + letter + " set to " + str(number)
-
-  #help
-  def help(self):
-    message = """
-```
-KISSLIST HELP:
-Base command: kisslist | kl
-Subcommands:
-  + help -> shows commands
-  + show [None] [all] [number | numbers] -> show kisslist
-  + add [letter(s)] -> add letter(s) to kisslist
-  + remove [letter(s)] -> remove letter(s) from kisslist
-  + set [letter] [number] -> sets letter to number
-  + delete -> deletes kisslist
-  + create -> creates kisslist
-```
-    """
-    return message
-
-  # commands
-  @commands.command(name="kisslist", aliases=["kl"])
-  async def kisslist(self, ctx, *msg):
-    if len(msg) == 0:
-      await ctx.send("Command Not Found :(")
+      description = "No valid letter"
+    elif number.isdigit() == False or int(number) < 0:
+      description = "No valid number"
     else:
-      author_id = str(ctx.author.id)
-      author_name = str(ctx.author)
-      if msg[0] == "help":
-        response = self.help()
-        await ctx.send(response)
-
-      elif msg[0] == "show":
-        if len(msg) == 1:
-          response = self.show(author_id, author_name)
-        elif len(msg) == 2 and msg[1] == "all":
-          response = self.show_all(author_id, author_name)
-        elif len(msg) == 2 and msg[1] in ["number", "numbers"]:
-          response = self.show_number(author_id, author_name)
-        else:
-          response = "Command Not Found! - show"
-        await ctx.send(response)
-
-      elif msg[0] == "delete":
-        if len(msg) == 1:
-          response = self.delete(author_id)
-        else:
-          response = "Command Not Found! - delete"
-        await ctx.send(response)
-
-      elif msg[0] == "create":
-        if len(msg) == 1:
-          response = self.create(author_id)
-        else:
-          response = "Command Not Found! - create"
-        await ctx.send(response)
-        
-      elif msg[0] == "add":
-        response = self.add(author_id, msg[1::])
-        if response == "":
-          response = "No letters where added."
-        await ctx.send(response)
-      
-      elif msg[0] == "remove":
-        response = self.remove(author_id, msg[1::])
-        if response == "":
-          response = "No letters where removed."
-        await ctx.send(response)
-
-      elif msg[0] == "set":
-        if len(msg) == 3:
-          response = self.set(author_id, msg[1], msg[2])
-        else:
-          response = "Command Not Found! - set"
-        await ctx.send(response)
-
-      else:
-        await ctx.send("Command Not Found! - commands")
+      db["kisslist"][author_id][letter] = int(number)
+      description = "Letter " + letter + " set to " + number
+    embed = Embed(
+      description=description,
+      color=self.COLOR
+    )
+    await ctx.send(embed=embed)

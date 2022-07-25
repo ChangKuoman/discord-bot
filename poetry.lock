@@ -142,6 +142,14 @@ async = ["asgiref (>=3.2)"]
 dotenv = ["python-dotenv"]
 
 [[package]]
+name = "functions"
+version = "0.7.0"
+description = "Functional programming in Python"
+category = "main"
+optional = false
+python-versions = "*"
+
+[[package]]
 name = "idna"
 version = "3.3"
 description = "Internationalized Domain Names in Applications (IDNA)"
@@ -345,7 +353,7 @@ testing = ["pytest (>=6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytest-
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.8.0,<3.9"
-content-hash = "a9bdb68c38b28af1a42e6072020b6c82c7153c321584e2926cc8ee404da3b183"
+content-hash = "cf20c1674041e2576c20cc07f61bd980e900b47fcc5ff97d65570903453705bd"
 
 [metadata.files]
 aiohttp = []
@@ -360,6 +368,7 @@ colorama = []
 discord = []
 "discord.py" = []
 flask = []
+functions = []
 idna = []
 importlib-metadata = []
 itsdangerous = []

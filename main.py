@@ -5,14 +5,12 @@ import os
 from cogs import setup
 
 client = commands.Bot(command_prefix='$', intents=discord.Intents.all())
-
 client.remove_command('help')
-
 setup(client)
 
 @client.event
 async def on_ready():
-  print("We have logged in as {0.user}".format(client))
+  print("Logged as {0.user}".format(client))
 
 if __name__ == "__main__":
   try:

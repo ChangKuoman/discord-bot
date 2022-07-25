@@ -1,11 +1,15 @@
 from .Kisslist import Kisslist
-from .Messages import Messages
 from .Music import Music
+from .General import General
+from .Help import Help
+from .Economy import Economy
 
 cogs_list = [
   Kisslist,
-  Messages,
-  Music
+  Music,
+  General,
+  Help,
+  Economy
 ]
 
 def setup(client):

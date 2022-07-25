@@ -1,0 +1,402 @@
+{
+  "laptop": {
+    "name": "💻 Laptop",
+    "price": 2500,
+    "resale_price": 1500,
+    "max_quantity": 100,
+    "rarity": "Rare",
+    "job_increase": 500
+  },
+  "computer": {
+    "name": "🖥 Computer",
+    "price": 5000,
+    "resale_price": 4000,
+    "max_quantity": 20,
+    "rarity": "Epic",
+    "job_increase": 500
+  },
+  "keyboard": {
+    "name": "⌨ Keyboard",
+    "price": 300,
+    "resale_price": 200,
+    "max_quantity": 1000,
+    "rarity": "Common",
+    "job_increase": 50
+  },
+  "printer_machine": {
+    "name": "🖨 Printer Machine",
+    "price": 300,
+    "resale_price": 200,
+    "max_quantity": 1000,
+    "rarity": "Common",
+    "job_increase": 50
+  },
+  "mouse": {
+    "name": "🖱 Mouse",
+    "price": 40,
+    "resale_price": 30,
+    "max_quantity": 1000,
+    "rarity": "Common",
+    "job_increase": 0.5
+  },
+  "toolbox": {
+    "name": "🧰 Toolbox",
+    "price": 200,
+    "resale_price": 100,
+    "max_quantity": 1000,
+    "rarity": "Common",
+    "job_increase": 50
+  },
+  "fire_extinguisher": {
+    "name": "🧯 Fire Extinguisher",
+    "price": 70,
+    "resale_price": 60,
+    "max_quantity": 1000,
+    "rarity": "Common",
+    "job_increase": 0.5
+  },
+  "fire_engine": {
+    "name": "🚒 Fire Engine",
+    "price": 112000,
+    "resale_price": 100000,
+    "max_quantity": 1,
+    "rarity": "Legendary",
+    "job_increase": 5000
+  },
+  "ambulance": {
+    "name": "🚑 Ambulance",
+    "price": 120000,
+    "resale_price": 110000,
+    "max_quantity": 1,
+    "rarity": "Legendary",
+    "job_increase": 5000
+  },
+  "hammer": {
+    "name": "🔨 Hammer",
+    "price": 30,
+    "resale_price": 20,
+    "max_quantity": 1000,
+    "rarity": "Common",
+    "job_increase": 0.5
+  },
+  "bricks": {
+    "name": "🧱 Bricks",
+    "price": 50,
+    "resale_price": 40,
+    "max_quantity": 1000,
+    "rarity": "Common",
+    "job_increase": 0.5
+  },
+  "axe": {
+    "name": "🪓 Axe",
+    "price": 50,
+    "resale_price": 40,
+    "max_quantity": 1000,
+    "rarity": "Common",
+    "job_increase": 0.5
+  },
+  "wrench": {
+    "name": "🔧 Wrench",
+    "price": 70,
+    "resale_price": 60,
+    "max_quantity": 1000,
+    "rarity": "Common",
+    "job_increase": 0.5
+  },
+  "screw": {
+    "name": "🔩 Screw",
+    "price": 50,
+    "resale_price": 40,
+    "max_quantity": 1000,
+    "rarity": "Common",
+    "job_increase": 0.5
+  },
+  "chains": {
+    "name": "⛓ Chains",
+    "price": 90,
+    "resale_price": 80,
+    "max_quantity": 1000,
+    "rarity": "Common",
+    "job_increase": 0.5
+  },
+  "grains": {
+    "name": "🌾 Grains",
+    "price": 25,
+    "resale_price": 15,
+    "max_quantity": 1000,
+    "rarity": "Common",
+    "job_increase": 0.5
+  },
+  "knife": {
+    "name": "🔪 Knife",
+    "price": 200,
+    "resale_price": 100,
+    "max_quantity": 1000,
+    "rarity": "Common",
+    "job_increase": 50
+  },
+  "alcohol": {
+    "name": "🍾 Alcohol",
+    "price": 20,
+    "resale_price": 10,
+    "max_quantity": 1000,
+    "rarity": "Common",
+    "job_increase": 0.5
+  },
+  "microphone": {
+    "name": "🎤 Microphone",
+    "price": 100,
+    "resale_price": 90,
+    "max_quantity": 1000,
+    "rarity": "Common",
+    "job_increase": 50
+  },
+  "movie_camara": {
+    "name": "🎥 Movie Camara",
+    "price": 1600,
+    "resale_price": 1500,
+    "max_quantity": 100,
+    "rarity": "Rare",
+    "job_increase": 500
+  },
+  "disk": {
+    "name": "💿 Disk",
+    "price": 20,
+    "resale_price": 10,
+    "max_quantity": 1000,
+    "rarity": "Common",
+    "job_increase": 0.5
+  },
+  "crayon": {
+    "name": "🖍 Crayon",
+    "price": 30,
+    "resale_price": 20,
+    "max_quantity": 1000,
+    "rarity": "Common",
+    "job_increase": 0.5
+  },
+  "pencil": {
+    "name": "✏ Pencil",
+    "price": 30,
+    "resale_price": 20,
+    "max_quantity": 1000,
+    "rarity": "Common",
+    "job_increase": 0.5
+  },
+  "paint_brush": {
+    "name": "🖌 Paint Brush",
+    "price": 20,
+    "resale_price": 10,
+    "max_quantity": 1000,
+    "rarity": "Common",
+    "job_increase": 0.5
+  },
+  "ruler": {
+    "name": "📏 Ruler",
+    "price": 20,
+    "resale_price": 10,
+    "max_quantity": 1000,
+    "rarity": "Common",
+    "job_increase": 0.5
+  },
+  "scissor": {
+    "name": "✂ Scissor",
+    "price": 10,
+    "resale_price": 8,
+    "max_quantity": 1000,
+    "rarity": "Common",
+    "job_increase": 0.5
+  },
+  "apple": {
+    "name": "🍎 Apple",
+    "price": 6,
+    "resale_price": 4,
+    "max_quantity": 1000,
+    "rarity": "Common",
+    "job_increase": 0.5
+  },
+  "trash_can": {
+    "name": "🗑 Trash Can",
+    "price": 90,
+    "resale_price": 80,
+    "max_quantity": 1000,
+    "rarity": "Common",
+    "job_increase": 0.5
+  },
+  "clipboard": {
+    "name": "📋 Clipboard",
+    "price": 20,
+    "resale_price": 10,
+    "max_quantity": 1000,
+    "rarity": "Common",
+    "job_increase": 0.5
+  },
+  "file_cabinet": {
+    "name": "🗄 File Cabinet",
+    "price": 250,
+    "resale_price": 150,
+    "max_quantity": 1000,
+    "rarity": "Common",
+    "job_increase": 50
+  },
+  "graphs": {
+    "name": "📊 Graphs",
+    "price": 25,
+    "resale_price": 15,
+    "max_quantity": 1000,
+    "rarity": "Common",
+    "job_increase": 0.5
+  },
+  "microscope": {
+    "name": "🔬 Microscope",
+    "price": 400,
+    "resale_price": 300,
+    "max_quantity": 1000,
+    "rarity": "Common",
+    "job_increase": 50
+  },
+  "adn": {
+    "name": "🧬 ADN",
+    "price": 500,
+    "resale_price": 400,
+    "max_quantity": 500,
+    "rarity": "Uncommon",
+    "job_increase": 50
+  },
+  "test_tube": {
+    "name": "🧪 Test Tube",
+    "price": 25,
+    "resale_price": 15,
+    "max_quantity": 1000,
+    "rarity": "Common",
+    "job_increase": 0.5
+  },
+  "petri_dish": {
+    "name": "🧫 Petri Dish",
+    "price": 30,
+    "resale_price": 20,
+    "max_quantity": 1000,
+    "rarity": "Common",
+    "job_increase": 0.5
+  },
+  "radio": {
+    "name": "📻 Radio",
+    "price": 250,
+    "resale_price": 150,
+    "max_quantity": 1000,
+    "rarity": "Common",
+    "job_increase": 50
+  },
+  "satellite_antenna": {
+    "name": "📡 Satellite Antenna",
+    "price": 600,
+    "resale_price": 500,
+    "max_quantity": 500,
+    "rarity": "Uncommon",
+    "job_increase": 50
+  },
+  "stethoscope": {
+    "name": "🩺 Stethoscope",
+    "price": 300,
+    "resale_price": 200,
+    "max_quantity": 1000,
+    "rarity": "Common",
+    "job_increase": 50
+  },
+  "adhesive_bandage": {
+    "name": "🩹 Adhesive Bandage",
+    "price": 30,
+    "resale_price": 20,
+    "max_quantity": 1000,
+    "rarity": "Common",
+    "job_increase": 0.5
+  },
+  "syringe": {
+    "name": "💉 Syringe",
+    "price": 20,
+    "resale_price": 10,
+    "max_quantity": 1000,
+    "rarity": "Common",
+    "job_increase": 0.5
+  },
+  "thermometer": {
+    "name": "🌡 Thermometer",
+    "price": 20,
+    "resale_price": 10,
+    "max_quantity": 1000,
+    "rarity": "Common",
+    "job_increase": 0.5
+  },
+  "airplane": {
+    "name": "✈️ Airplane",
+    "price": 89000000,
+    "resale_price": 70000000,
+    "max_quantity": 1,
+    "rarity": "Legendary",
+    "job_increase": 5000
+  },
+  "world_map": {
+    "name": "🗺 World Map",
+    "price": 20,
+    "resale_price": 10,
+    "max_quantity": 1000,
+    "rarity": "Common",
+    "job_increase": 0.5
+  },
+  "dagger": {
+    "name": "🗡 Dagger",
+    "price": 20,
+    "resale_price": 10,
+    "max_quantity": 1000,
+    "rarity": "Common",
+    "job_increase": 0.5
+  },
+  "crystal_ball": {
+    "name": "🔮 Crystal Ball",
+    "price": 50,
+    "resale_price": 40,
+    "max_quantity": 1000,
+    "rarity": "Common",
+    "job_increase": 0.5
+  },
+  "turkish_eye": {
+    "name": "🧿 Turkish Eye",
+    "price": 20,
+    "resale_price": 10,
+    "max_quantity": 1000,
+    "rarity": "Common",
+    "job_increase": 0.5
+  },
+  "athletic_shoe": {
+    "name": "👟 Athletic Shoe",
+    "price": 70,
+    "resale_price": 60,
+    "max_quantity": 1000,
+    "rarity": "Common",
+    "job_increase": 0.5
+  },
+  "barber_pole": {
+    "name": "💈 Barber Pole",
+    "price": 150,
+    "resale_price": 140,
+    "max_quantity": 1000,
+    "rarity": "Common",
+    "job_increase": 50
+  },
+  "soap": {
+    "name": "🧼 Soap",
+    "price": 30,
+    "resale_price": 20,
+    "max_quantity": 1000,
+    "rarity": "Common",
+    "job_increase": 0.5
+  },
+  "police_car": {
+    "name": "🚓 Police car",
+    "price": 40000,
+    "resale_price": 30000,
+    "max_quantity": 5,
+    "rarity": "Super Epic",
+    "job_increase": 5000
+  }
+}
