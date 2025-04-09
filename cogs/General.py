@@ -65,7 +65,7 @@ class General(commands.Cog):
     gmt_m7 = timestamp - timedelta(hours=7)
     #gmt_p2 = timestamp + timedelta(hours=2)
     gmt_p1 = timestamp + timedelta(hours=1)
-    
+
     embed.add_field(name="🇵🇪 Lima, Perú: ", value=f"`{gmt_m5}`")
     embed.add_field(name="🇺🇸 Las Vegas, USA: ", value=f"`{gmt_m7}`")
     embed.add_field(name="🇪🇸 Madrid, Spain: ", value=f"`{gmt_p1}`")

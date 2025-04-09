@@ -4,3 +4,4 @@ __pycache__
 
 texto.txt
 logs/
+.env

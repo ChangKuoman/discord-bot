@@ -1,14 +1,13 @@
 from discord.ext import commands
 from discord import Embed
-from replit import db
 from random import randint, choice, shuffle
 from datetime import datetime, timedelta
 import asyncio
 import json
 
 # Creates economy in database
-if "economy" not in db.keys():
-  db["economy"] = {}
+#if "economy" not in db.keys():
+#  db["economy"] = {}
 
 # Class for discord Economy
 class Economy(commands.Cog):
@@ -27,7 +26,7 @@ class Economy(commands.Cog):
   async def send_basic_embed(self, ctx, msg):
     embed = Embed(description=msg, color=self.COLOR)
     await ctx.send(embed=embed)
-    
+
   def create_id(self, id):
     db["economy"][id] = {
       "balance": 0,
@@ -54,8 +53,8 @@ class Economy(commands.Cog):
     if last_date_claimed == "":
       return True
     last_date_claimed = datetime.strptime(last_date_claimed, '%Y-%m-%d %H:%M:%S.%f')
-    if (last_date_claimed.day != today_datetime.day 
-        or last_date_claimed.month != today_datetime.month 
+    if (last_date_claimed.day != today_datetime.day
+        or last_date_claimed.month != today_datetime.month
         or last_date_claimed.year != today_datetime.year):
       return True
     return False
@@ -65,8 +64,8 @@ class Economy(commands.Cog):
     if last_date_claimed == "":
       return True
     last_date_claimed = datetime.strptime(last_date_claimed, '%Y-%m-%d %H:%M:%S.%f')
-    if (last_date_claimed.day == yesterday_datetime.day 
-        and last_date_claimed.month == yesterday_datetime.month 
+    if (last_date_claimed.day == yesterday_datetime.day
+        and last_date_claimed.month == yesterday_datetime.month
         and last_date_claimed.year == yesterday_datetime.year):
       return True
     return False
@@ -80,14 +79,14 @@ class Economy(commands.Cog):
         if key == "name":
           continue
         description += f"{' '.join(key.split('_')).title()}: `{value}`\n"
-      
+
       embed.add_field(
         name=f"{object['name']}",
         value=f"{description}",
         inline=False
       )
     embed.set_footer(text=f"Page {page + 1}/{len(pages)}")
-    
+
 
   ############################### DAILY #########################
   @commands.command(
@@ -98,7 +97,7 @@ class Economy(commands.Cog):
     user_id = str(ctx.author.id)
     if user_id not in db["economy"].keys():
       self.create_id(user_id)
-    
+
     today_datetime, yesterday_datetime, time_til_tomorrow = self.get_dates()
     last_date_claimed = db["economy"][user_id]["daily"]["last_claimed"]
 
@@ -164,7 +163,7 @@ class Economy(commands.Cog):
       # send message of slots
       amount = int(amount)
       description = (f"Bet amount: `{amount}`"
-                    f"\nThree sevens: `{amount*30}`" 
+                    f"\nThree sevens: `{amount*30}`"
                     f"\nThree equal fruits: `{amount*10}`"
                     f"\nTwo sevens: `{amount*4}`"
                     f"\nOne seven: `{amount}`")
@@ -180,13 +179,13 @@ class Economy(commands.Cog):
 
       # wait to user input
       def check(reaction, user):
-        return (user == ctx.author 
-                and str(reaction.emoji) in ["▶️", "❌"] 
+        return (user == ctx.author
+                and str(reaction.emoji) in ["▶️", "❌"]
                 and reaction.message.id == message.id)
       error = False
       try:
         reaction, user = await self.CLIENT.wait_for("reaction_add", timeout=15.0, check=check)
-        await message.remove_reaction(reaction, user) 
+        await message.remove_reaction(reaction, user)
       except:
         error = True
         embed = Embed(description="❌ You took too long to choose!",
@@ -237,16 +236,16 @@ class Economy(commands.Cog):
             amount = amount*4
           elif game.count("7️⃣") == 1:
             amount = amount
-          elif (game.count("🍒") == 3 
-                or game.count("🍉") == 3 
-                or game.count("🍇") == 3 
-                or game.count("🍊") == 3 
+          elif (game.count("🍒") == 3
+                or game.count("🍉") == 3
+                or game.count("🍇") == 3
+                or game.count("🍊") == 3
                 or game.count("🍓") == 3):
             amount = amount*10
           else:
             text_to_send = "Lost"
             amount = -amount
-            
+
           # send message
           if amount > 0:
             db["economy"][user_id]["balance"] += amount
@@ -288,20 +287,20 @@ class Economy(commands.Cog):
 
       # wait to user input
       def check(reaction, user):
-        return (user == ctx.author 
-                and str(reaction.emoji) in ["▶️", "❌"] 
+        return (user == ctx.author
+                and str(reaction.emoji) in ["▶️", "❌"]
                 and reaction.message.id == message.id)
       error = False
       try:
         reaction, user = await self.CLIENT.wait_for("reaction_add", timeout=15.0, check=check)
-        await message.remove_reaction(reaction, user) 
+        await message.remove_reaction(reaction, user)
       except:
         error = True
         embed = Embed(description="❌ You took too long to choose!",
                       color=self.COLOR   )
         await message.clear_reactions()
         await message.edit(embed=embed)
-  
+
       if not error:
         # never started game
         if str(reaction.emoji) == "❌":
@@ -330,8 +329,8 @@ class Economy(commands.Cog):
 
           # wait for user input of color
           def check2(reaction, user):
-            return (user == ctx.author 
-                    and str(reaction.emoji) in ["🔴", "⚫"] 
+            return (user == ctx.author
+                    and str(reaction.emoji) in ["🔴", "⚫"]
                     and reaction.message.id == message.id)
           try:
             reaction, user = await self.CLIENT.wait_for("reaction_add", timeout=15.0, check=check2)
@@ -341,7 +340,7 @@ class Economy(commands.Cog):
           finally:
             await message.clear_reactions()
             await message.add_reaction(chosen_color)
-          
+
           embed.clear_fields()
           await message.edit(embed=embed)
           for i in range(times_to_spin):
@@ -356,7 +355,7 @@ class Economy(commands.Cog):
                        f"{options[(place+i+2)%37]}")
             embed.add_field(name="Roulette", value=roulette, inline=False)
             await message.edit(embed=embed)
-            
+
           winner_color = options[(place+i)%37]
           if winner_color == chosen_color:
             db["economy"][user_id]["balance"] += amount*2
@@ -384,7 +383,7 @@ class Economy(commands.Cog):
     # ]
     pages = [list_store[i:i + self.STORE_PAGINATION] for i in range(0, len(list_store), self.STORE_PAGINATION)]
     page = 0
-    
+
     self.pagination(pages, page, embed)
     message = await ctx.send(embed=embed)
     await message.add_reaction("⬅️")
@@ -393,8 +392,8 @@ class Economy(commands.Cog):
 
     while True:
       def check(reaction, user):
-        return (user == ctx.author 
-                and str(reaction.emoji) in ["⬅️", "➡️", "❌"] 
+        return (user == ctx.author
+                and str(reaction.emoji) in ["⬅️", "➡️", "❌"]
                 and reaction.message.id == message.id)
       try:
         reaction, user = await self.CLIENT.wait_for("reaction_add", timeout=60.0, check=check)
@@ -432,7 +431,7 @@ class Economy(commands.Cog):
 
     with open("assets/store.json", 'r') as file:
       STORE = json.load(file)
-    
+
     if len(product) == 0:
       await self.send_basic_embed(ctx, "❌ Product is Required!")
     elif "_".join(product).lower() not in STORE.keys():
@@ -452,7 +451,7 @@ class Economy(commands.Cog):
           today_date = datetime.now() - timedelta(hours=5)
           db["economy"][user_id]["inventory"][product_name]["obtained"] = f"{today_date.year}-{today_date.month}-{today_date.day}"
           db["economy"][user_id]["balance"] -= product["price"]
-          
+
           embed = Embed(
             description=f"Bought: **{product['name']}**",
             color=self.COLOR
@@ -470,9 +469,9 @@ class Economy(commands.Cog):
       self.create_id(user_id)
     embed = Embed(title=f"🎒 {ctx.author.display_name}'s Inventory",
                   color=self.COLOR)
-    
+
     list_items = [item for item in db["economy"][user_id]["inventory"].values()]
-    
+
     if len(list_items) == 0:
       embed.add_field(name="Objects", value="`You don't have any objects yet`", inline=False)
       await ctx.send(embed=embed)
@@ -484,15 +483,15 @@ class Economy(commands.Cog):
       await message.add_reaction("⬅️")
       await message.add_reaction("➡️")
       await message.add_reaction("❌")
-  
+
       while True:
         def check(reaction, user):
-          return (user == ctx.author 
-                  and str(reaction.emoji) in ["⬅️", "➡️", "❌"] 
+          return (user == ctx.author
+                  and str(reaction.emoji) in ["⬅️", "➡️", "❌"]
                   and reaction.message.id == message.id)
         try:
           reaction, user = await self.CLIENT.wait_for("reaction_add", timeout=60.0, check=check)
-  
+
           if str(reaction.emoji) == "⬅️":
             page += (0 if page == 0 else -1)
           elif str(reaction.emoji) == "➡️":
@@ -516,7 +515,7 @@ class Economy(commands.Cog):
 
   async def sc_diamonds(self, ctx, embed, message):
     matrix = [[["⏺"] for _ in range(4)] for _ in range(4)]
-    
+
     def add_emoji(emoji, quantity, matrix):
       count = 0
       while count < quantity:
@@ -555,7 +554,7 @@ class Economy(commands.Cog):
     marked_places = []
     q_diamonds = 0
     opportunities = 3
-    
+
     game = draw_game(matrix, marked_places)
     await message.clear_reactions()
     embed.add_field(name="DIAMOND SCRATCHCARD", value=game, inline=False)
@@ -563,7 +562,7 @@ class Economy(commands.Cog):
     await message.edit(embed=embed)
 
     while opportunities != 0:
-      
+
       await message.add_reaction("1️⃣")
       await message.add_reaction("2️⃣")
       await message.add_reaction("3️⃣")
@@ -571,13 +570,13 @@ class Economy(commands.Cog):
 
       # wait to user input
       def check_numbers_diamonds(reaction, user):
-        return (user == ctx.author 
-                and str(reaction.emoji) in ["1️⃣", "2️⃣", "3️⃣", "4️⃣"] 
+        return (user == ctx.author
+                and str(reaction.emoji) in ["1️⃣", "2️⃣", "3️⃣", "4️⃣"]
                 and reaction.message.id == message.id)
       while True:
         try:
           reaction, user = await self.CLIENT.wait_for("reaction_add", timeout=15.0, check=check_numbers_diamonds)
-          await message.remove_reaction(reaction, user) 
+          await message.remove_reaction(reaction, user)
           break
         except:
           continue
@@ -588,11 +587,11 @@ class Economy(commands.Cog):
       await message.add_reaction("🇧")
       await message.add_reaction("🇨")
       await message.add_reaction("🇩")
-      
+
       # wait to user input
       def check_letter_diamonds(reaction, user):
-        return (user == ctx.author 
-                and str(reaction.emoji) in ["🇦", "🇧", "🇨", "🇩"] 
+        return (user == ctx.author
+                and str(reaction.emoji) in ["🇦", "🇧", "🇨", "🇩"]
                 and reaction.message.id == message.id)
       while True:
         try:
@@ -614,7 +613,7 @@ class Economy(commands.Cog):
       marked_places.append((i, j))
 
       embed.clear_fields()
-      
+
       if len(matrix[i][j]) > 1:
         if matrix[i][j][1] == "2️⃣":
           opportunities += 1
@@ -624,7 +623,7 @@ class Economy(commands.Cog):
         else:
           q_diamonds += 1
       opportunities -= 1
-      
+
       game = draw_game(matrix, marked_places)
       embed.add_field(name="DIAMOND SCRATCHCARD", value=game, inline=False)
       embed.add_field(name="OPPORTUNITIES", value=f"{opportunities}", inline=False)
@@ -639,14 +638,14 @@ class Economy(commands.Cog):
       elif q_diamonds == 3:
         won = 500
       db["economy"][str(ctx.author.id)]["balance"] += won
-      
+
       game = draw_game(matrix, marked_places)
       embed.clear_fields()
       embed.add_field(name="DIAMOND SCRATCHCARD", value=game, inline=False)
       embed.add_field(name="OPPORTUNITIES", value=f"{opportunities}", inline=False)
       embed.add_field(name="YOU WON", value=f"`{won}`", inline=False)
       await message.edit(embed=embed)
-  
+
   @commands.command(
     name="scratchcards",
     help="Many games of scratchcards"
@@ -669,10 +668,10 @@ class Economy(commands.Cog):
     If you find a dollar, you will win it immediatly
     """
     THREE_IN_A_ROW_HTP = """
-    
+
     """
     ANIMALS_HTP = """
-    
+
     """
     embed.add_field(name="1️⃣ Diamonds", value=DIAMONDS_HTP, inline=False)
     embed.add_field(name="2️⃣ 3️ in a row", value=THREE_IN_A_ROW_HTP, inline=False)
@@ -686,13 +685,13 @@ class Economy(commands.Cog):
 
     # wait to user input
     def check(reaction, user):
-      return (user == ctx.author 
-              and str(reaction.emoji) in ["1️⃣", "2️⃣", "3️⃣"] 
+      return (user == ctx.author
+              and str(reaction.emoji) in ["1️⃣", "2️⃣", "3️⃣"]
               and reaction.message.id == message.id)
     error = False
     try:
       reaction, user = await self.CLIENT.wait_for("reaction_add", timeout=15.0, check=check)
-      await message.remove_reaction(reaction, user) 
+      await message.remove_reaction(reaction, user)
     except:
       error = True
       embed = Embed(description="❌ You took too long to choose!",
@@ -707,11 +706,11 @@ class Economy(commands.Cog):
         else:
           db["economy"][user_id]["balance"] -= 10
           await self.sc_diamonds(ctx, embed, message)
-        
-        
+
+
       elif str(reaction.emoji) == "2️⃣":
         pass
       elif str(reaction.emoji) == "3️⃣":
         pass
 
-        
+

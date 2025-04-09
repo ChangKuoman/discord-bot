@@ -10,6 +10,6 @@ cogs_list = [
   Economy
 ]
 
-def setup(client):
+async def setup(client):
   for cog in cogs_list:
-    client.add_cog(cog(client))
+    await client.add_cog(cog(client))

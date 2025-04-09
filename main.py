@@ -1,12 +1,13 @@
 import discord
 from discord.ext import commands
-from keep_alive import keep_alive
 import os
 from cogs import setup
+from dotenv import load_dotenv
+import asyncio
 
 client = commands.Bot(command_prefix='$', intents=discord.Intents.all())
 client.remove_command('help')
-setup(client)
+asyncio.run(setup(client))
 
 @client.event
 async def on_ready():
@@ -14,7 +15,7 @@ async def on_ready():
 
 if __name__ == "__main__":
   try:
-    keep_alive()
-    client.run(os.environ['token'])
+    load_dotenv()
+    client.run(os.getenv("token"))
   except:
     os.system("kill 1")
