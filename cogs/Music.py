@@ -278,7 +278,7 @@ class Music(commands.Cog):
   async def set_playlist(self, ctx, response):
     for entry in response["entries"]:
       self.add_song(ctx, entry)
-    await self.send_basic_embed("🎵 Playlist added to queue!")
+    await self.send_basic_embed(ctx, "🎵 Playlist added to queue!")
     await self.move_client(ctx)
     await self.play_song(ctx)
 
@@ -288,20 +288,25 @@ class Music(commands.Cog):
     self.check_guild_id(guild_id)
 
     if ctx.author.voice is None:
-      await self.send_basic_embed("❌ You're not in a voice channel!")
+      await self.send_basic_embed(ctx, "❌ You're not in a voice channel!")
     elif len(msg) == 0:
-      await self.send_basic_embed("❌ You must put a valid url/search!")
+      await self.send_basic_embed(ctx, "❌ You must put a valid url/search!")
     
     # when is url:
     elif len(msg) == 1 and self.REGEX.match(msg[0]):
-      response = self.search_url(msg[0])
-      if response is None:
-        await self.send_basic_embed("❌ You must put a valid url!")
+      ###
+      if "spotify" in msg[0] or "apple" in msg[0]:
+        await self.send_basic_embed(ctx, "😪 We're sorry, but currently we don't support spotify or apple music links")
       else:
-        if "playlist" in msg[0]:
-          await self.set_playlist(ctx, response)
+      ###
+        response = self.search_url(msg[0])
+        if response is None:
+          await self.send_basic_embed(ctx, "❌ You must put a valid url!")
         else:
-          await self.set_one_song(ctx, response)
+          if "playlist" in msg[0]:
+            await self.set_playlist(ctx, response)
+          else:
+            await self.set_one_song(ctx, response)
     # when is search
     else:
       search = " ".join(msg)
@@ -365,6 +370,6 @@ class Music(commands.Cog):
 
         response = self.search_url(url)
         if response is None:
-          await self.send_basic_embed("❌ Something went wrong!")
+          await self.send_basic_embed(ctx, "❌ Something went wrong!")
         else:
           await self.set_one_song(ctx, response, message)

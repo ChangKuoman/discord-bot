@@ -1,402 +1,252 @@
 {
   "laptop": {
     "name": "💻 Laptop",
-    "price": 2500,
-    "resale_price": 1500,
-    "max_quantity": 100,
-    "rarity": "Rare",
-    "job_increase": 500
+    "price": 2800,
+    "description": "Something"
   },
   "computer": {
     "name": "🖥 Computer",
-    "price": 5000,
-    "resale_price": 4000,
-    "max_quantity": 20,
-    "rarity": "Epic",
-    "job_increase": 500
+    "price": 2800,
+    "description": "Something"
   },
   "keyboard": {
     "name": "⌨ Keyboard",
-    "price": 300,
-    "resale_price": 200,
-    "max_quantity": 1000,
-    "rarity": "Common",
-    "job_increase": 50
+    "price": 2800,
+    "description": "Something"
   },
   "printer_machine": {
     "name": "🖨 Printer Machine",
-    "price": 300,
-    "resale_price": 200,
-    "max_quantity": 1000,
-    "rarity": "Common",
-    "job_increase": 50
+    "price": 2800,
+    "description": "Something"
   },
   "mouse": {
     "name": "🖱 Mouse",
-    "price": 40,
-    "resale_price": 30,
-    "max_quantity": 1000,
-    "rarity": "Common",
-    "job_increase": 0.5
+    "price": 2800,
+    "description": "Something"
   },
   "toolbox": {
     "name": "🧰 Toolbox",
-    "price": 200,
-    "resale_price": 100,
-    "max_quantity": 1000,
-    "rarity": "Common",
-    "job_increase": 50
+    "price": 2800,
+    "description": "Something"
   },
   "fire_extinguisher": {
     "name": "🧯 Fire Extinguisher",
-    "price": 70,
-    "resale_price": 60,
-    "max_quantity": 1000,
-    "rarity": "Common",
-    "job_increase": 0.5
+    "price": 2800,
+    "description": "Something"
   },
   "fire_engine": {
     "name": "🚒 Fire Engine",
-    "price": 112000,
-    "resale_price": 100000,
-    "max_quantity": 1,
-    "rarity": "Legendary",
-    "job_increase": 5000
+    "price": 2800,
+    "description": "Something"
   },
   "ambulance": {
     "name": "🚑 Ambulance",
-    "price": 120000,
-    "resale_price": 110000,
-    "max_quantity": 1,
-    "rarity": "Legendary",
-    "job_increase": 5000
+    "price": 2800,
+    "description": "Something"
   },
   "hammer": {
     "name": "🔨 Hammer",
-    "price": 30,
-    "resale_price": 20,
-    "max_quantity": 1000,
-    "rarity": "Common",
-    "job_increase": 0.5
+    "price": 2800,
+    "description": "Something"
   },
   "bricks": {
     "name": "🧱 Bricks",
-    "price": 50,
-    "resale_price": 40,
-    "max_quantity": 1000,
-    "rarity": "Common",
-    "job_increase": 0.5
+    "price": 2800,
+    "description": "Something"
   },
   "axe": {
     "name": "🪓 Axe",
-    "price": 50,
-    "resale_price": 40,
-    "max_quantity": 1000,
-    "rarity": "Common",
-    "job_increase": 0.5
+    "price": 2800,
+    "description": "Something"
   },
   "wrench": {
     "name": "🔧 Wrench",
-    "price": 70,
-    "resale_price": 60,
-    "max_quantity": 1000,
-    "rarity": "Common",
-    "job_increase": 0.5
+    "price": 2800,
+    "description": "Something"
   },
   "screw": {
     "name": "🔩 Screw",
-    "price": 50,
-    "resale_price": 40,
-    "max_quantity": 1000,
-    "rarity": "Common",
-    "job_increase": 0.5
+    "price": 2800,
+    "description": "Something"
   },
   "chains": {
     "name": "⛓ Chains",
-    "price": 90,
-    "resale_price": 80,
-    "max_quantity": 1000,
-    "rarity": "Common",
-    "job_increase": 0.5
+    "price": 2800,
+    "description": "Something"
   },
   "grains": {
     "name": "🌾 Grains",
-    "price": 25,
-    "resale_price": 15,
-    "max_quantity": 1000,
-    "rarity": "Common",
-    "job_increase": 0.5
+    "price": 2800,
+    "description": "Something"
   },
   "knife": {
     "name": "🔪 Knife",
-    "price": 200,
-    "resale_price": 100,
-    "max_quantity": 1000,
-    "rarity": "Common",
-    "job_increase": 50
+    "price": 2800,
+    "description": "Something"
   },
   "alcohol": {
     "name": "🍾 Alcohol",
-    "price": 20,
-    "resale_price": 10,
-    "max_quantity": 1000,
-    "rarity": "Common",
-    "job_increase": 0.5
+    "price": 1,
+    "description": "Something"
   },
   "microphone": {
     "name": "🎤 Microphone",
-    "price": 100,
-    "resale_price": 90,
-    "max_quantity": 1000,
-    "rarity": "Common",
-    "job_increase": 50
+    "price": 2800,
+    "description": "Something"
   },
   "movie_camara": {
     "name": "🎥 Movie Camara",
-    "price": 1600,
-    "resale_price": 1500,
-    "max_quantity": 100,
-    "rarity": "Rare",
-    "job_increase": 500
+    "price": 2800,
+    "description": "Something"
   },
   "disk": {
     "name": "💿 Disk",
-    "price": 20,
-    "resale_price": 10,
-    "max_quantity": 1000,
-    "rarity": "Common",
-    "job_increase": 0.5
+    "price": 2800,
+    "description": "Something"
   },
   "crayon": {
     "name": "🖍 Crayon",
-    "price": 30,
-    "resale_price": 20,
-    "max_quantity": 1000,
-    "rarity": "Common",
-    "job_increase": 0.5
+    "price": 2800,
+    "description": "Something"
   },
   "pencil": {
     "name": "✏ Pencil",
-    "price": 30,
-    "resale_price": 20,
-    "max_quantity": 1000,
-    "rarity": "Common",
-    "job_increase": 0.5
+    "price": 2800,
+    "description": "Something"
   },
   "paint_brush": {
     "name": "🖌 Paint Brush",
-    "price": 20,
-    "resale_price": 10,
-    "max_quantity": 1000,
-    "rarity": "Common",
-    "job_increase": 0.5
+    "price": 2800,
+    "description": "Something"
   },
   "ruler": {
     "name": "📏 Ruler",
-    "price": 20,
-    "resale_price": 10,
-    "max_quantity": 1000,
-    "rarity": "Common",
-    "job_increase": 0.5
+    "price": 2800,
+    "description": "Something"
   },
   "scissor": {
     "name": "✂ Scissor",
-    "price": 10,
-    "resale_price": 8,
-    "max_quantity": 1000,
-    "rarity": "Common",
-    "job_increase": 0.5
+    "price": 2800,
+    "description": "Something"
   },
   "apple": {
     "name": "🍎 Apple",
-    "price": 6,
-    "resale_price": 4,
-    "max_quantity": 1000,
-    "rarity": "Common",
-    "job_increase": 0.5
+    "price": 2800,
+    "description": "Something"
   },
   "trash_can": {
     "name": "🗑 Trash Can",
-    "price": 90,
-    "resale_price": 80,
-    "max_quantity": 1000,
-    "rarity": "Common",
-    "job_increase": 0.5
+    "price": 2800,
+    "description": "Something"
   },
   "clipboard": {
     "name": "📋 Clipboard",
-    "price": 20,
-    "resale_price": 10,
-    "max_quantity": 1000,
-    "rarity": "Common",
-    "job_increase": 0.5
+    "price": 2800,
+    "description": "Something"
   },
   "file_cabinet": {
     "name": "🗄 File Cabinet",
-    "price": 250,
-    "resale_price": 150,
-    "max_quantity": 1000,
-    "rarity": "Common",
-    "job_increase": 50
+    "price": 2800,
+    "description": "Something"
   },
   "graphs": {
     "name": "📊 Graphs",
-    "price": 25,
-    "resale_price": 15,
-    "max_quantity": 1000,
-    "rarity": "Common",
-    "job_increase": 0.5
+    "price": 2800,
+    "description": "Something"
   },
   "microscope": {
     "name": "🔬 Microscope",
-    "price": 400,
-    "resale_price": 300,
-    "max_quantity": 1000,
-    "rarity": "Common",
-    "job_increase": 50
+    "price": 2800,
+    "description": "Something"
   },
   "adn": {
     "name": "🧬 ADN",
-    "price": 500,
-    "resale_price": 400,
-    "max_quantity": 500,
-    "rarity": "Uncommon",
-    "job_increase": 50
+    "price": 2800,
+    "description": "Something"
   },
   "test_tube": {
     "name": "🧪 Test Tube",
-    "price": 25,
-    "resale_price": 15,
-    "max_quantity": 1000,
-    "rarity": "Common",
-    "job_increase": 0.5
+    "price": 2800,
+    "description": "Something"
   },
   "petri_dish": {
     "name": "🧫 Petri Dish",
-    "price": 30,
-    "resale_price": 20,
-    "max_quantity": 1000,
-    "rarity": "Common",
-    "job_increase": 0.5
+    "price": 2800,
+    "description": "Something"
   },
   "radio": {
     "name": "📻 Radio",
-    "price": 250,
-    "resale_price": 150,
-    "max_quantity": 1000,
-    "rarity": "Common",
-    "job_increase": 50
+    "price": 2800,
+    "description": "Something"
   },
   "satellite_antenna": {
     "name": "📡 Satellite Antenna",
-    "price": 600,
-    "resale_price": 500,
-    "max_quantity": 500,
-    "rarity": "Uncommon",
-    "job_increase": 50
+    "price": 2800,
+    "description": "Something"
   },
   "stethoscope": {
     "name": "🩺 Stethoscope",
-    "price": 300,
-    "resale_price": 200,
-    "max_quantity": 1000,
-    "rarity": "Common",
-    "job_increase": 50
+    "price": 2800,
+    "description": "Something"
   },
   "adhesive_bandage": {
     "name": "🩹 Adhesive Bandage",
-    "price": 30,
-    "resale_price": 20,
-    "max_quantity": 1000,
-    "rarity": "Common",
-    "job_increase": 0.5
+    "price": 2800,
+    "description": "Something"
   },
   "syringe": {
     "name": "💉 Syringe",
-    "price": 20,
-    "resale_price": 10,
-    "max_quantity": 1000,
-    "rarity": "Common",
-    "job_increase": 0.5
+    "price": 2800,
+    "description": "Something"
   },
   "thermometer": {
     "name": "🌡 Thermometer",
-    "price": 20,
-    "resale_price": 10,
-    "max_quantity": 1000,
-    "rarity": "Common",
-    "job_increase": 0.5
+    "price": 2800,
+    "description": "Something"
   },
   "airplane": {
     "name": "✈️ Airplane",
-    "price": 89000000,
-    "resale_price": 70000000,
-    "max_quantity": 1,
-    "rarity": "Legendary",
-    "job_increase": 5000
+    "price": 2800,
+    "description": "Something"
   },
   "world_map": {
     "name": "🗺 World Map",
-    "price": 20,
-    "resale_price": 10,
-    "max_quantity": 1000,
-    "rarity": "Common",
-    "job_increase": 0.5
+    "price": 2800,
+    "description": "Something"
   },
   "dagger": {
     "name": "🗡 Dagger",
-    "price": 20,
-    "resale_price": 10,
-    "max_quantity": 1000,
-    "rarity": "Common",
-    "job_increase": 0.5
+    "price": 2800,
+    "description": "Something"
   },
   "crystal_ball": {
     "name": "🔮 Crystal Ball",
-    "price": 50,
-    "resale_price": 40,
-    "max_quantity": 1000,
-    "rarity": "Common",
-    "job_increase": 0.5
+    "price": 2800,
+    "description": "Something"
   },
   "turkish_eye": {
     "name": "🧿 Turkish Eye",
-    "price": 20,
-    "resale_price": 10,
-    "max_quantity": 1000,
-    "rarity": "Common",
-    "job_increase": 0.5
+    "price": 2800,
+    "description": "Something"
   },
   "athletic_shoe": {
     "name": "👟 Athletic Shoe",
-    "price": 70,
-    "resale_price": 60,
-    "max_quantity": 1000,
-    "rarity": "Common",
-    "job_increase": 0.5
+    "price": 2800,
+    "description": "Something"
   },
   "barber_pole": {
     "name": "💈 Barber Pole",
-    "price": 150,
-    "resale_price": 140,
-    "max_quantity": 1000,
-    "rarity": "Common",
-    "job_increase": 50
+    "price": 2800,
+    "description": "Something"
   },
   "soap": {
     "name": "🧼 Soap",
-    "price": 30,
-    "resale_price": 20,
-    "max_quantity": 1000,
-    "rarity": "Common",
-    "job_increase": 0.5
+    "price": 2800,
+    "description": "Something"
   },
   "police_car": {
     "name": "🚓 Police car",
-    "price": 40000,
-    "resale_price": 30000,
-    "max_quantity": 5,
-    "rarity": "Super Epic",
-    "job_increase": 5000
+    "price": 2800,
+    "description": "Something"
   }
 }

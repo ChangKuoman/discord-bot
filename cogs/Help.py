@@ -9,7 +9,7 @@ class Help(commands.Cog):
     self.COLOR = 0xD77BFF
     self.PREFIX = "$"
 
-  @commands.command(name="help", help="Sends help for use of commands [None | cog | command][None | succommand]")
+  @commands.command(name="help", help="Sends help for use of commands [None | cog | command][None | subcommand]")
   async def help(self, ctx, msg_command=None, msg_subcommand=None):
     # $help
     if msg_command is None:
