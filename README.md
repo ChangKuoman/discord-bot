@@ -8,8 +8,16 @@ Foca Bot is a discord bot primarily for music.
 npm install ffmpeg-static
 ```
 
+Linux:
 ```bash
 export PATH="$PWD/node_modules/ffmpeg-static:$PATH"
+python main.py
+```
+
+Windows:
+```bash
+venv\Scripts\activate
+$env:PATH = "$PWD\node_modules\ffmpeg-static;$env:PATH"
 python main.py
 ```
 
