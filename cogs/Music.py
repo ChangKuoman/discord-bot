@@ -2,11 +2,9 @@ import discord
 from discord.ext import commands
 import yt_dlp
 #from youtube_dl import YoutubeSearch
-from datetime import datetime, timedelta
 import re
 import json
 import os
-import asyncio
 
 class Music(commands.Cog):
   """Commands for playing music in server"""
@@ -52,13 +50,6 @@ class Music(commands.Cog):
   def check_guild_id(self, guild_id):
     if guild_id not in self.servers.keys():
       self.servers[guild_id] = {"queue": [], "vc": None, "playing": None}
-
-  def log_song(self, guild_id, guild_name, title, url, yt_url):
-    with open("logs/songs.csv", "a") as log:
-      time = str(datetime.today() - timedelta(hours=5))
-      text = ",".join([guild_id, guild_name, title, time, yt_url, url])
-      log.write(text)
-      log.write('\n')
 
   async def send_basic_embed(self, ctx, description):
     embed = discord.Embed(
@@ -106,7 +97,7 @@ class Music(commands.Cog):
       description = "⏸ Paused"
     else:
       description = "❌ There is no song to pause"
-    self.send_basic_embed(ctx, description)
+    await self.send_basic_embed(ctx, description)
 
   @commands.command(name="resume", help="Resumes song")
   async def resume(self, ctx):
@@ -243,21 +234,14 @@ class Music(commands.Cog):
 
   def add_song(self, ctx, song):
     guild_id = str(ctx.guild.id)
-    guild_name = str(ctx.guild.name)
     user = str(ctx.author.display_name)
     voice_channel = ctx.author.voice.channel
-    url = song["formats"][0]["url"]
-    title = song["title"]
-    yt_url = song["webpage_url"]
 
     self.servers[guild_id]["queue"].append({
-      "title": title,
-      "url": url,
+      "url": song,
       "vc": voice_channel,
-      "yt_url": yt_url,
       "requested_by": user
     })
-    #self.log_song(guild_id, guild_name, title, url, yt_url)
 
   async def move_client(self, ctx):
     guild_id = str(ctx.guild.id)
@@ -280,7 +264,8 @@ class Music(commands.Cog):
           print(f"Error: {e}")
 
       self.servers[guild_id]["vc"].play(
-        discord.FFmpegPCMAudio(self.OUTPUT_PATH)
+        discord.FFmpegPCMAudio(self.OUTPUT_PATH),
+        after=lambda e: self.play_next(guild_id)
       )
       self.servers[guild_id]["playing"] = song
 
@@ -332,6 +317,7 @@ class Music(commands.Cog):
 
   @commands.command(name="play", aliases=["p", "add"], help="Add to queue song [url song | url playlist | search]")
   async def play(self, ctx, *msg):
+
     guild_id = str(ctx.guild.id)
     self.check_guild_id(guild_id)
 
@@ -347,14 +333,14 @@ class Music(commands.Cog):
         await self.send_basic_embed(ctx, "😪 We're sorry, but currently we don't support spotify or apple music links")
       else:
       ###
-        response = self.search_url(msg[0])
-        if response is None:
-          await self.send_basic_embed(ctx, "❌ You must put a valid url!")
-        else:
+        #response = self.search_url(msg[0])
+        #if response is None:
+        #  await self.send_basic_embed(ctx, "❌ You must put a valid url!")
+        #else:
           if "playlist" in msg[0]:
-            await self.set_playlist(ctx, response)
+            await self.set_playlist(ctx, msg[0])
           else:
-            await self.set_one_song(ctx, response)
+            await self.set_one_song(ctx, msg[0])
     # when is search
     else:
       search = " ".join(msg)
