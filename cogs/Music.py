@@ -5,6 +5,8 @@ import yt_dlp
 from datetime import datetime, timedelta
 import re
 import json
+import os
+import asyncio
 
 class Music(commands.Cog):
   """Commands for playing music in server"""
@@ -21,13 +23,26 @@ class Music(commands.Cog):
     with open("assets/regex.json", "r") as file:
       data = json.load(file)
     self.REGEX = re.compile(f"{data['url']}")
+    self.OUTPUT_PATH = "output.m4a"
 
   def play_next(self, guild_id):
+    # deletes file after playing
+    if os.path.exists(self.OUTPUT_PATH):
+      os.remove(self.OUTPUT_PATH)
+
     if len(self.servers[guild_id]["queue"]) > 0:
       song = self.servers[guild_id]["queue"].pop(0)
       url = song["url"]
+
+      opts = { 'outtmpl': self.OUTPUT_PATH, 'format': 'best', }
+      try:
+          with yt_dlp.YoutubeDL(opts) as ydl:
+            ydl.download([url])
+      except Exception as e:
+          print(f"Error: {e}")
+
       self.servers[guild_id]["vc"].play(
-        discord.FFmpegOpusAudio(url, **self.FFMPEG_OPTIONS),
+        discord.FFmpegPCMAudio(self.OUTPUT_PATH),
         after=lambda e: self.play_next(guild_id)
       )
       self.servers[guild_id]["playing"] = song
@@ -255,10 +270,17 @@ class Music(commands.Cog):
     guild_id = str(ctx.guild.id)
     if ctx.voice_client.is_playing() == False:
       song = self.servers[guild_id]["queue"].pop(0)
-      url_m = song["url"]
+
+      url = song["url"]
+      opts = { 'outtmpl': self.OUTPUT_PATH, 'format': 'best', }
+      try:
+          with yt_dlp.YoutubeDL(opts) as ydl:
+            ydl.download([url])
+      except Exception as e:
+          print(f"Error: {e}")
+
       self.servers[guild_id]["vc"].play(
-        discord.FFmpegOpusAudio(url_m, **self.FFMPEG_OPTIONS),
-        after=lambda e: self.play_next(guild_id)
+        discord.FFmpegPCMAudio(self.OUTPUT_PATH)
       )
       self.servers[guild_id]["playing"] = song
 
@@ -276,6 +298,7 @@ class Music(commands.Cog):
     await self.play_song(ctx)
 
   async def set_playlist(self, ctx, response):
+    print(response["entries"])
     for entry in response["entries"]:
       self.add_song(ctx, entry)
     await self.send_basic_embed(ctx, "🎵 Playlist added to queue!")
@@ -283,10 +306,11 @@ class Music(commands.Cog):
     await self.play_song(ctx)
 
   @commands.command(name="test", help="Test command")
-  async def test(self, ctx):
+  async def test(self, ctx, *msg):
     #TODO: file path is not overwritten when downloading a new song
     #TODO: send url through msg
-    url = "https://youtu.be/tGKCkLYIDdo?si=UUFMSdbWQtcAAQzE"
+    print(msg)
+    url = msg[0]
     output_path = "output.m4a"
 
     opts = { 'outtmpl': output_path, 'format': 'best', }
