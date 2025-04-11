@@ -17,5 +17,5 @@ if __name__ == "__main__":
   try:
     load_dotenv()
     client.run(os.getenv("token"))
-  except:
-    os.system("kill 1")
+  except Exception as e:
+    print("Error: ", e)

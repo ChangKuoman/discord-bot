@@ -1,7 +1,7 @@
 import discord
 from discord.ext import commands
-import youtube_dl
-from youtube_search import YoutubeSearch
+import yt_dlp
+#from youtube_dl import YoutubeSearch
 from datetime import datetime, timedelta
 import re
 import json
@@ -51,7 +51,7 @@ class Music(commands.Cog):
       color=self.COLOR
     )
     await ctx.send(embed=embed)
-  
+
   @commands.command(name="connect", aliases=["join"], help="Bot joins channel")
   async def connect(self, ctx):
     guild_id = str(ctx.guild.id)
@@ -75,7 +75,7 @@ class Music(commands.Cog):
     if ctx.voice_client is not None:
       if len(self.servers[guild_id]["queue"]) > 0:
         self.servers[guild_id]["queue"].clear()
-      if ctx.voice_client.is_playing():      
+      if ctx.voice_client.is_playing():
         ctx.voice_client.stop()
 
       await ctx.voice_client.disconnect()
@@ -83,7 +83,7 @@ class Music(commands.Cog):
     else:
       description = "❌ Bot not in voice channel"
     await self.send_basic_embed(ctx, description)
-  
+
   @commands.command(name="pause", help="Pauses song")
   async def pause(self, ctx):
     if ctx.voice_client is not None and ctx.voice_client.is_playing():
@@ -159,7 +159,7 @@ class Music(commands.Cog):
           inline=False
         )
       embed.set_footer(text=f"Page {page + 1}/{len(pages)}")
-    
+
     embed = discord.Embed(
       title=f"🎵 {ctx.guild.name}'s Music Queue",
       color=self.COLOR
@@ -176,15 +176,15 @@ class Music(commands.Cog):
       await message.add_reaction("⬅️")
       await message.add_reaction("➡️")
       await message.add_reaction("❌")
-  
+
       while True:
         def check(reaction, user):
-          return (user == ctx.author 
-                  and str(reaction.emoji) in ["⬅️", "➡️", "❌"] 
+          return (user == ctx.author
+                  and str(reaction.emoji) in ["⬅️", "➡️", "❌"]
                   and reaction.message.id == message.id)
         try:
           reaction, user = await self.CLIENT.wait_for("reaction_add", timeout=20.0, check=check)
-          
+
           if str(reaction.emoji) == "⬅️":
             await message.remove_reaction("⬅️", user)
             if page == 0:
@@ -192,7 +192,7 @@ class Music(commands.Cog):
             page -= 1
             pagination(pages, page, embed)
             await message.edit(embed=embed)
-  
+
           elif str(reaction.emoji) == "➡️":
             await message.remove_reaction("➡️", user)
             if page == len(pages) - 1:
@@ -200,14 +200,14 @@ class Music(commands.Cog):
             page += 1
             pagination(pages, page, embed)
             await message.edit(embed=embed)
-  
+
           elif str(reaction.emoji) == "❌":
             await message.clear_reactions()
             page = 0
             pagination(pages, page, embed)
             await message.edit(embed=embed)
             break
-  
+
         except:
           await message.clear_reactions()
           page = 0
@@ -219,7 +219,7 @@ class Music(commands.Cog):
 
   def search_url(self, url):
     YDL_OPTIONS = {"format":"bestaudio"}
-    with youtube_dl.YoutubeDL(YDL_OPTIONS) as ydl:
+    with yt_dlp.YoutubeDL(YDL_OPTIONS) as ydl:
       try:
         info = ydl.extract_info(url, download=False)
         return info
@@ -242,7 +242,7 @@ class Music(commands.Cog):
       "yt_url": yt_url,
       "requested_by": user
     })
-    self.log_song(guild_id, guild_name, title, url, yt_url)
+    #self.log_song(guild_id, guild_name, title, url, yt_url)
 
   async def move_client(self, ctx):
     guild_id = str(ctx.guild.id)
@@ -282,6 +282,30 @@ class Music(commands.Cog):
     await self.move_client(ctx)
     await self.play_song(ctx)
 
+  @commands.command(name="test", help="Test command")
+  async def test(self, ctx):
+    #TODO: file path is not overwritten when downloading a new song
+    #TODO: send url through msg
+    url = "https://youtu.be/tGKCkLYIDdo?si=UUFMSdbWQtcAAQzE"
+    output_path = "output.m4a"
+
+    opts = { 'outtmpl': output_path, 'format': 'best', }
+    try:
+        with yt_dlp.YoutubeDL(opts) as ydl:
+            ydl.download([url])
+    except Exception as e:
+        print(f"Error: {e}")
+
+    # TODO: error when vc already connected
+    # Connect to the voice channel
+    channel = ctx.author.voice.channel
+    voice_client = await channel.connect()
+
+    # Play the local audio file in the voice channel
+    voice_client.play(discord.FFmpegPCMAudio(output_path))
+
+    await ctx.send(f"Now playing: {url}")
+
   @commands.command(name="play", aliases=["p", "add"], help="Add to queue song [url song | url playlist | search]")
   async def play(self, ctx, *msg):
     guild_id = str(ctx.guild.id)
@@ -291,7 +315,7 @@ class Music(commands.Cog):
       await self.send_basic_embed(ctx, "❌ You're not in a voice channel!")
     elif len(msg) == 0:
       await self.send_basic_embed(ctx, "❌ You must put a valid url/search!")
-    
+
     # when is url:
     elif len(msg) == 1 and self.REGEX.match(msg[0]):
       ###
@@ -311,7 +335,7 @@ class Music(commands.Cog):
     else:
       search = " ".join(msg)
       results = YoutubeSearch(search, max_results=5).to_dict()
-  
+
       a, b, c, d, e = results
       songs=f"""🇦 `{a['title']}` - {a['channel']} - {a['duration']}
   🇧 `{b['title']}` - {b['channel']} - {b['duration']}
@@ -324,17 +348,17 @@ class Music(commands.Cog):
         description=songs,
         color=self.COLOR
       )
-      
+
       message = await ctx.send(embed=embed)
       await message.add_reaction("🇦")
       await message.add_reaction("🇧")
       await message.add_reaction("🇨")
       await message.add_reaction("🇩")
       await message.add_reaction("🇪")
-  
+
       def check(reaction, user):
-        return (user == ctx.author 
-                and str(reaction.emoji) in ["🇦", "🇧", "🇨", "🇩", "🇪"] 
+        return (user == ctx.author
+                and str(reaction.emoji) in ["🇦", "🇧", "🇨", "🇩", "🇪"]
                 and reaction.message.id == message.id)
 
       error = False
