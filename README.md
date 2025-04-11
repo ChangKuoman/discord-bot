@@ -2,6 +2,10 @@
 
 Foca Bot is a discord bot primarily for music.
 
+## Info
+
+foca-bot's _audio_ does not work using Skyline's internet due of firewall issues.
+
 ## Installation
 
 ```bash
