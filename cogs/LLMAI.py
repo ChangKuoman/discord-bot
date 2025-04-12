@@ -46,7 +46,6 @@ class LLMAI(commands.Cog):
     )
     await ctx.send(embed=embed)
 
-'''
   @commands.command(name="asktts", help="Briefly answer a question using AI and TTS.")
   async def asktts(self, ctx, *msg):
     msg = " ".join(msg)
@@ -87,7 +86,3 @@ class LLMAI(commands.Cog):
 
         embed.add_field(name="=== TRANSCRIPTION ===", value=answer)
         await ctx.send(embed=embed)
-
-
-
-'''
