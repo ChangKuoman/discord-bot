@@ -132,7 +132,7 @@ class Music(commands.Cog):
       embed.add_field(name="Playing:", value=f"`{str(ctx.voice_client.is_playing())}`", inline=False)
       if self.servers[guild_id]["playing"] is not None:
         embed.add_field(name="Song:", value=f"`{self.servers[guild_id]['playing']['title']}`", inline=False)
-        embed.add_field(name="URL:", value=f"`{self.servers[guild_id]['playing']['yt_url']}`", inline=False)
+        embed.add_field(name="URL:", value=f"`{self.servers[guild_id]['playing']['url']}`", inline=False)
     else:
       embed.add_field(name="Playing:", value=f"`False`", inline=False)
     await ctx.send(embed=embed)
@@ -157,7 +157,7 @@ class Music(commands.Cog):
       embed.clear_fields()
       for i in range(len(pages[page])):
         title = pages[page][i]['title']
-        yt_url = pages[page][i]['yt_url']
+        yt_url = pages[page][i]['url']
         user = pages[page][i]['requested_by']
         embed.add_field(
           name=f"{i+1 + page*self.QUEUE_PAGINATION}. {title}",
@@ -236,9 +236,13 @@ class Music(commands.Cog):
     guild_id = str(ctx.guild.id)
     user = str(ctx.author.display_name)
     voice_channel = ctx.author.voice.channel
+    title = song["title"]
+    url = song["webpage_url"]
+
 
     self.servers[guild_id]["queue"].append({
-      "url": song,
+      "url": url,
+      "title": title,
       "vc": voice_channel,
       "requested_by": user
     })
@@ -283,37 +287,11 @@ class Music(commands.Cog):
     await self.play_song(ctx)
 
   async def set_playlist(self, ctx, response):
-    print(response["entries"])
     for entry in response["entries"]:
       self.add_song(ctx, entry)
     await self.send_basic_embed(ctx, "🎵 Playlist added to queue!")
     await self.move_client(ctx)
     await self.play_song(ctx)
-
-  @commands.command(name="test", help="Test command")
-  async def test(self, ctx, *msg):
-    #TODO: file path is not overwritten when downloading a new song
-    #TODO: send url through msg
-    print(msg)
-    url = msg[0]
-    output_path = "output.m4a"
-
-    opts = { 'outtmpl': output_path, 'format': 'best', }
-    try:
-        with yt_dlp.YoutubeDL(opts) as ydl:
-            ydl.download([url])
-    except Exception as e:
-        print(f"Error: {e}")
-
-    # TODO: error when vc already connected
-    # Connect to the voice channel
-    channel = ctx.author.voice.channel
-    voice_client = await channel.connect()
-
-    # Play the local audio file in the voice channel
-    voice_client.play(discord.FFmpegPCMAudio(output_path))
-
-    await ctx.send(f"Now playing: {url}")
 
   @commands.command(name="play", aliases=["p", "add"], help="Add to queue song [url song | url playlist | search]")
   async def play(self, ctx, *msg):
@@ -333,15 +311,15 @@ class Music(commands.Cog):
         await self.send_basic_embed(ctx, "😪 We're sorry, but currently we don't support spotify or apple music links")
       else:
       ###
-        #response = self.search_url(msg[0])
-        #if response is None:
-        #  await self.send_basic_embed(ctx, "❌ You must put a valid url!")
-        #else:
+        response = self.search_url(msg[0])
+        if response is None:
+          await self.send_basic_embed(ctx, "❌ You must put a valid url!")
+        else:
           if "playlist" in msg[0]:
-            await self.set_playlist(ctx, msg[0])
+            await self.set_playlist(ctx, response)
           else:
-            await self.set_one_song(ctx, msg[0])
-    # when is search
+            await self.set_one_song(ctx, response)
+    # TODO: when is search
     else:
       search = " ".join(msg)
       results = YoutubeSearch(search, max_results=5).to_dict()
