@@ -1,7 +1,8 @@
 from discord.ext import commands
 import discord
 import requests
-from datetime import datetime, timedelta
+from datetime import datetime
+from zoneinfo import ZoneInfo
 
 class General(commands.Cog):
   """Commands for general use"""
@@ -56,17 +57,37 @@ class General(commands.Cog):
 
   @commands.command(name="timestamp", aliases=["now", "datetime"], help="Sends actual timestamp")
   async def timestamp(self, ctx):
-    timestamp = datetime.today()
+    # Current UTC time
+    timestamp = datetime.now(ZoneInfo("UTC"))
+
+    # Local times
+    lima_time = timestamp.astimezone(ZoneInfo("America/Lima"))
+    california_time = timestamp.astimezone(ZoneInfo("America/Los_Angeles"))
+    madrid_time = timestamp.astimezone(ZoneInfo("Europe/Madrid"))
+
+    # Emoji for DST
+    def dst_emoji(dt):
+        return "☀️" if dt.dst() and dt.dst().total_seconds() != 0 else ""
+
     embed = discord.Embed(
       title="TIMESTAMP",
       color=self.COLOR
     )
-    gmt_m5 = timestamp - timedelta(hours=5)
-    gmt_m7 = timestamp - timedelta(hours=7)
-    #gmt_p2 = timestamp + timedelta(hours=2)
-    gmt_p1 = timestamp + timedelta(hours=1)
 
-    embed.add_field(name="🇵🇪 Lima, Perú: ", value=f"`{gmt_m5}`")
-    embed.add_field(name="🇺🇸 Las Vegas, USA: ", value=f"`{gmt_m7}`")
-    embed.add_field(name="🇪🇸 Madrid, Spain: ", value=f"`{gmt_p1}`")
+    # Add fields with time + DST emoji
+    embed.add_field(
+        name=f"🇵🇪 Lima, Perú {dst_emoji(lima_time)}",
+        value=f"`{lima_time.strftime('%Y-%m-%d %H:%M:%S')}`"
+    )
+
+    embed.add_field(
+        name=f"🇺🇸 California, USA {dst_emoji(california_time)}",
+        value=f"`{california_time.strftime('%Y-%m-%d %H:%M:%S')}`"
+    )
+
+    embed.add_field(
+        name=f"🇪🇸 Madrid, Spain {dst_emoji(madrid_time)}",
+        value=f"`{madrid_time.strftime('%Y-%m-%d %H:%M:%S')}`"
+    )
+
     await ctx.send(embed=embed)
