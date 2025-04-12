@@ -5,6 +5,7 @@ import yt_dlp
 import re
 import json
 import os
+import time
 
 class Music(commands.Cog):
   """Commands for playing music in server"""
@@ -106,20 +107,6 @@ class Music(commands.Cog):
       description = "▶️ Resumed"
     else:
       description = "❌ There is no song to resume"
-    await self.send_basic_embed(ctx, description)
-
-  @commands.command(name="next", aliases=["skip"], help="Skips song to play the next")
-  async def next(self, ctx):
-    guild_id = str(ctx.guild.id)
-    self.check_guild_id(guild_id)
-    if ctx.voice_client is None:
-      description = "❌ Bot not in voice channel"
-    elif len(self.servers[guild_id]["queue"]) > 0:
-      self.servers[guild_id]["vc"].stop()
-      description = "▶️ Next song playing"
-    else:
-      self.servers[guild_id]["vc"].stop()
-      description = "❌ No more songs in queue to play"
     await self.send_basic_embed(ctx, description)
 
   @commands.command(name="status", aliases=["stats"], help="Info of playing song")
