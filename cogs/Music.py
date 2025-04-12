@@ -5,7 +5,7 @@ import yt_dlp
 import re
 import json
 import os
-import time
+from modules import YoutubeSearch
 
 class Music(commands.Cog):
   """Commands for playing music in server"""
@@ -308,10 +308,10 @@ class Music(commands.Cog):
             await self.set_one_song(ctx, response)
     # TODO: when is search
     else:
-      search = " ".join(msg)
-      results = YoutubeSearch(search, max_results=5).to_dict()
 
-      a, b, c, d, e = results
+      results = json.loads(YoutubeSearch(" ".join(msg), max_results=5).to_json())
+
+      a, b, c, d, e = results["videos"]
       songs=f"""🇦 `{a['title']}` - {a['channel']} - {a['duration']}
   🇧 `{b['title']}` - {b['channel']} - {b['duration']}
   🇨 `{c['title']}` - {c['channel']} - {c['duration']}
@@ -357,15 +357,15 @@ class Music(commands.Cog):
 
       if not error:
         if str(reaction.emoji) == "🇦":
-          url = "https://www.youtube.com/" + a["url_suffix"]
+          url = "https://www.youtube.com" + a["url_suffix"]
         elif str(reaction.emoji) == "🇧":
-          url = "https://www.youtube.com/" + b["url_suffix"]
+          url = "https://www.youtube.com" + b["url_suffix"]
         elif str(reaction.emoji) == "🇨":
-          url = "https://www.youtube.com/" + c["url_suffix"]
+          url = "https://www.youtube.com" + c["url_suffix"]
         elif str(reaction.emoji) == "🇩":
-          url = "https://www.youtube.com/" + d["url_suffix"]
+          url = "https://www.youtube.com" + d["url_suffix"]
         elif str(reaction.emoji) == "🇪":
-          url = "https://www.youtube.com/" + e["url_suffix"]
+          url = "https://www.youtube.com" + e["url_suffix"]
 
         response = self.search_url(url)
         if response is None:
