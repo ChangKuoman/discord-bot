@@ -2,12 +2,14 @@ from .Music import Music
 from .General import General
 from .Help import Help
 from .Economy import Economy
+from .LLMAI import LLMAI
 
 cogs_list = [
   Music,
   General,
   Help,
-  Economy
+  Economy,
+  LLMAI
 ]
 
 async def setup(client):

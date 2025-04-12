@@ -1,0 +1,92 @@
+from discord.ext import commands
+import discord
+import os
+from gtts import gTTS
+from google import genai
+
+class LLMAI(commands.Cog):
+  """Commands for using AI"""
+
+  def __init__(self, client):
+    self.CLIENT = client
+    self.COLOR = 0xFF0000
+    API_KEY = os.getenv("API_KEY")
+
+    self.GEMINI_CLIENT = genai.Client(api_key=API_KEY)
+    self.GEMINI_MODEL = "gemini-2.0-flash"
+    self.FILE_PATH = "gemini.mp3"
+
+  @commands.command(name="asks", help="Briefly answer a question using AI.")
+  async def asks(self, ctx, *msg):
+    msg = " ".join(msg)
+    response = self.GEMINI_CLIENT.models.generate_content(
+        model=self.GEMINI_MODEL, contents=f"In just 1 paragraph: {msg}"
+    )
+    answer = response.text
+
+    embed = discord.Embed(
+      title="FOCA-BOT ANSWERS",
+      description=answer,
+      color=self.COLOR
+    )
+    await ctx.send(embed=embed)
+
+  @commands.command(name="ask", help="Answer a question using AI.")
+  async def ask(self, ctx, *msg):
+    msg = " ".join(msg)
+    response = self.GEMINI_CLIENT.models.generate_content(
+        model=self.GEMINI_MODEL, contents=f"{msg}"
+    )
+    answer = response.text
+
+    embed = discord.Embed(
+      title="FOCA-BOT ANSWERS",
+      description=answer,
+      color=self.COLOR
+    )
+    await ctx.send(embed=embed)
+
+
+  @commands.command(name="asktts", help="Briefly answer a question using AI and TTS.")
+  async def asktts(self, ctx, *msg):
+    msg = " ".join(msg)
+    response = self.GEMINI_CLIENT.models.generate_content(
+        model=self.GEMINI_MODEL, contents=f"In just 1 paragraph: {msg}"
+    )
+    answer = response.text
+    tts = gTTS(answer, lang='en')
+    tts.save(self.FILE_PATH)
+
+    embed = discord.Embed(
+      title="FOCA-BOT ANSWERS",
+      color=self.COLOR
+    )
+
+    if ctx.author.voice is None:
+      embed.set_footer(text="❌ You're not in a voice channel!")
+      embed.add_field(name="ANSWER", value=answer)
+      await ctx.send(embed=embed)
+    else:
+      voice_client = ctx.guild.voice_client
+      if voice_client is None:
+        channel = ctx.author.voice.channel
+        voice_client = await channel.connect()
+        voice_client.play(discord.FFmpegPCMAudio(self.FILE_PATH))
+
+        embed.add_field(name="=== TRANSCRIPTION ===", value=answer)
+        await ctx.send(embed=embed)
+
+      elif voice_client.is_playing():
+        embed.set_footer(text="❌ You're already playing audio!")
+        embed.add_field(name="ANSWER", value=answer)
+        await ctx.send(embed=embed)
+
+      elif ctx.guild.voice_client.channel != ctx.author.voice.channel:
+        await voice_client.move_to(ctx.author.voice.channel)
+        voice_client.play(discord.FFmpegPCMAudio(self.FILE_PATH))
+
+        embed.add_field(name="=== TRANSCRIPTION ===", value=answer)
+        await ctx.send(embed=embed)
+
+
+
