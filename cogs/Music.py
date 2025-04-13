@@ -23,6 +23,13 @@ class Music(commands.Cog):
     self.REGEX = re.compile(f"{data['url']}")
     self.OUTPUT_PATH = "output.m4a"
 
+  def __del__(self):
+    try:
+      if os.path.exists(self.OUTPUT_PATH):
+        os.remove(self.OUTPUT_PATH)
+    except Exception as e:
+      print(f"Error: {e}")
+
   def play_next(self, guild_id):
     # deletes file after playing
     if os.path.exists(self.OUTPUT_PATH):
