@@ -1,9 +1,6 @@
 venv/
 node_modules/
 __pycache__
-
-texto.txt
-logs/
 .env
-
 test/
+assets/downloads/
