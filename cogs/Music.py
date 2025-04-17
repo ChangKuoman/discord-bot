@@ -217,7 +217,12 @@ class Music(commands.Cog):
   ### play functions
 
   def search_url(self, url):
-    YDL_OPTIONS = {"format":"bestaudio"}
+    YDL_OPTIONS = {
+        "format": "bestaudio/best",
+        #"quiet": True,
+        "playlist_items": "1-10",  # Specify the range of videos to extract
+        "noplaylist": True,  # Disable playlist extraction
+    }
     with yt_dlp.YoutubeDL(YDL_OPTIONS) as ydl:
       try:
         info = ydl.extract_info(url, download=False)
@@ -312,7 +317,6 @@ class Music(commands.Cog):
             await self.set_playlist(ctx, response)
           else:
             await self.set_one_song(ctx, response)
-    # TODO: when is search
     else:
 
       results = json.loads(YoutubeSearch(" ".join(msg), max_results=5).to_json())
