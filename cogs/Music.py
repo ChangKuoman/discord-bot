@@ -21,7 +21,12 @@ class Music(commands.Cog):
     with open("assets/regex.json", "r") as file:
       data = json.load(file)
     self.REGEX = re.compile(f"{data['url']}")
-    self.OUTPUT_PATH = "output.m4a"
+    self.OUTPUT_PATH = "assets/downloads/output.m4a"
+    try:
+      if os.path.exists(self.OUTPUT_PATH):
+        os.remove(self.OUTPUT_PATH)
+    except Exception as e:
+      print(f"Error: {e}")
 
   def __del__(self):
     try:
