@@ -5,7 +5,7 @@ import json
 # YoutubeSearch.py
 # Source: Based on the project by @joetats on GitHub
 # URL: https://github.com/joetats/youtube_search
-# This file is used exactly as originally published, without modifications.
+# This file has been modified to exclude playlists from the results.
 # License: MIT
 
 class YoutubeSearch:
@@ -17,7 +17,7 @@ class YoutubeSearch:
     def _search(self):
         encoded_search = urllib.parse.quote_plus(self.search_terms)
         BASE_URL = "https://youtube.com"
-        url = f"{BASE_URL}/results?search_query={encoded_search}"
+        url = f"{BASE_URL}/results?search_query={encoded_search}&sp=EgIQAQ%253D%253D"
         response = requests.get(url).text
         while "ytInitialData" not in response:
             response = requests.get(url).text
