@@ -9,6 +9,7 @@ from google.adk.runners import Runner
 from google.genai import types # For creating message Content/Parts
 
 from tools import get_weather # Import the tool function
+from sub_agents import greeting_agent, farewell_agent
 
 import warnings
 # Ignore all warnings
@@ -19,15 +20,20 @@ warnings.filterwarnings("ignore")
 MODEL_GEMINI_2_0_FLASH = "gemini-2.0-flash"
 
 weather_agent = Agent(
-    name="weather_agent_v1",
-    model=MODEL_GEMINI_2_0_FLASH, # Can be a string for Gemini or a LiteLlm object
-    description="Provides weather information for specific cities.",
-    instruction="You are a helpful weather assistant. "
-                "When the user asks for the weather in a specific city, "
-                "use the 'get_weather' tool to find the information. "
-                "If the tool returns an error, inform the user politely. "
-                "If the tool is successful, present the weather report clearly.",
-    tools=[get_weather], # Pass the function directly
+    name="weather_agent_v2", # Give it a new version name
+    model=MODEL_GEMINI_2_0_FLASH,
+    description="The main coordinator agent. Handles weather requests and delegates greetings/farewells to specialists.",
+    instruction="You are the main Weather Agent coordinating a team. Your primary responsibility is to provide weather information. "
+                "Use the 'get_weather' tool ONLY for specific weather requests (e.g., 'weather in London'). "
+                "You have specialized sub-agents: "
+                "1. 'greeting_agent': Handles simple greetings like 'Hi', 'Hello'. Delegate to it for these. "
+                "2. 'farewell_agent': Handles simple farewells like 'Bye', 'See you'. Delegate to it for these. "
+                "Analyze the user's query. If it's a greeting, delegate to 'greeting_agent'. If it's a farewell, delegate to 'farewell_agent'. "
+                "If it's a weather request, handle it yourself using 'get_weather'. "
+                "For anything else, respond appropriately or state you cannot handle it.",
+    tools=[get_weather], # Root agent still needs the weather tool for its core task
+    # Key change: Link the sub-agents here!
+    sub_agents=[greeting_agent, farewell_agent]
 )
 
 # === SESSION ===
@@ -71,24 +77,21 @@ async def call_agent_async(query: str, runner, user_id, session_id):
              final_response_text = f"Agent escalated: {event.error_message or 'No specific message.'}"
           break # Stop processing events once the final response is found
 
-  return final_response_text
+  print(final_response_text)
 
 # === RUN ===
 async def run_conversation():
-    res = await call_agent_async("What is the weather like in London?",
-                                       runner=runner,
-                                       user_id=USER_ID,
-                                       session_id=SESSION_ID)
-    print(res) # Expecting a successful weather report
-    res = await call_agent_async("How about Paris?",
-                                       runner=runner,
-                                       user_id=USER_ID,
-                                       session_id=SESSION_ID) # Expecting the tool's error message
-    print(res)
-    res = await call_agent_async("Tell me the weather in Lima",
-                                       runner=runner,
-                                       user_id=USER_ID,
-                                       session_id=SESSION_ID)
-    print(res) # Expecting the tool's error message
+        await call_agent_async(query = "Hello there! My name is Sam.",
+                               runner=runner,
+                               user_id=USER_ID,
+                               session_id=SESSION_ID)
+        await call_agent_async(query = "What is the weather in New York?",
+                               runner=runner,
+                               user_id=USER_ID,
+                               session_id=SESSION_ID)
+        await call_agent_async(query = "Thanks, bye!",
+                               runner=runner,
+                               user_id=USER_ID,
+                               session_id=SESSION_ID)
 # Execute the conversation using await in an async context (like Colab/Jupyter)
 asyncio.run(run_conversation())
