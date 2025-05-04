@@ -5,6 +5,7 @@ import re
 import json
 import os
 from modules import YoutubeSearch
+import asyncio
 
 class Music(commands.Cog):
   """Commands for playing music in server"""
@@ -35,7 +36,8 @@ class Music(commands.Cog):
     except Exception as e:
       print(f"Error: {e}")
 
-  def play_next(self, guild_id):
+  def play_next(self, ctx):
+    guild_id = str(ctx.guild.id)
     # deletes file after playing
     if os.path.exists(self.OUTPUT_PATH):
       os.remove(self.OUTPUT_PATH)
@@ -53,11 +55,13 @@ class Music(commands.Cog):
 
       self.servers[guild_id]["vc"].play(
         discord.FFmpegPCMAudio(self.OUTPUT_PATH),
-        after=lambda e: self.play_next(guild_id)
+        after=lambda e: self.play_next(ctx)
       )
       self.servers[guild_id]["playing"] = song
     else:
       self.servers[guild_id]["playing"] = None
+      coro = ctx.voice_client.disconnect()
+      fut = asyncio.run_coroutine_threadsafe(coro, self.CLIENT.loop)
 
   def check_guild_id(self, guild_id):
     if guild_id not in self.servers.keys():
@@ -273,7 +277,7 @@ class Music(commands.Cog):
 
       self.servers[guild_id]["vc"].play(
         discord.FFmpegPCMAudio(self.OUTPUT_PATH),
-        after=lambda e: self.play_next(guild_id)
+        after=lambda e: self.play_next(ctx)
       )
       self.servers[guild_id]["playing"] = song
 
