@@ -1,33 +1,55 @@
-# Foca Bot
+# 🎶 Welcome to Foca Bot
 
-Foca Bot is a discord bot primarily for music.
+**Foca Bot** started as a simple Discord music bot. Over time, it has evolved into a multifunctional assistant tailored for my personal Discord server. Here's what it can do so far:
 
-## Info
+## 🛠️ Features
+- 🎵 Play music from YouTube
+- 🔍 Search for songs on YouTube
+- 💰 Basic server economy
+- 🎫 Lottery scratchers
+- 🎰 Casino-style mini games
+- 🗣️ Text-to-Speech for general AI questions
+- 🤖 AI-powered Study Buddy using agent-based interaction
+- 🚧 ...and more features coming soon!
 
-foca-bot's _audio_ does not work using Skyline's internet due of firewall issues.
+## ⚠️ Important Notes
 
-## Installation
+- **Audio streaming does not work on Skyline's network** due to firewall restrictions.
+
+---
+
+## 🚀 Installation
+
+### 1. Install dependencies
 
 ```bash
 npm install ffmpeg-static
+python -m venv venv
 ```
 
+On Windows
 ```bash
-python -m venv venv
 venv\Scripts\activate
 pip install -r requirements.txt
 ```
-
-Linux:
+On Linux/macOS:
 ```bash
-export PATH="$PWD/node_modules/ffmpeg-static:$PATH"
-python main.py
+source venv/bin/activate
+pip install -r requirements.txt
 ```
 
-Windows:
+### 2. Run the bot
+
+On Windows
 ```bash
 venv\Scripts\activate
 $env:PATH = "$PWD\node_modules\ffmpeg-static;$env:PATH"
+python main.py
+```
+On Linux/macOS:
+```bash
+source venv/bin/activate
+export PATH="$PWD/node_modules/ffmpeg-static:$PATH"
 python main.py
 ```
 
