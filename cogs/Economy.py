@@ -270,7 +270,7 @@ class Economy(commands.Cog, Scratchcards, General, Roulette, Slots):
 
   @commands.command(
     name="scratchcards",
-    aliases=["scratchers", "scratch", "sc"],
+    aliases=["scratchers", "scratch", "sc", "scratchcard", "scratcher"],
     help="Many games of scratchcards"
   )
   async def scratchcards(self, ctx):
@@ -284,25 +284,23 @@ class Economy(commands.Cog, Scratchcards, General, Roulette, Slots):
     DIAMONDS_HTP = """Bet amount: `20`
     How to play:
     You are able to scratch 3 times
-    Find 3 diamonds to win the big prize: `500`
-    Find 2 diamonds to win the medium prize: `100`
-    Find 1 diamond to win the small prize: `20`
+    Find 3 diamonds to win the big prize: `500` ()
+    Find 2 diamonds to win the medium prize: `100` ()
+    Find 1 diamond to win the small prize: `20` ()
     If you find a second chance, you are be able to scratch again
     If you find a dollar, you will win it immediatly
     """
     THREE_IN_A_ROW_HTP = """Bet amount: `5`
     How to play:
-    You can scratch 3 times
+    You can scratch 3 times (0.13%)
     Find 3 of the same object in a row to win the big prize: `5000`
     """
     ANIMALS_HTP = """Bet amount: `10`
     How to play:
-    Scratch the first animal, this will be your animal, then you are be able to scratch 3 times
-    Find 3 animal of the same as yours to win the big prize: `1000`
-    Find 2 animal of the same as yours to win the medium prize: `500`
-    Find 1 animal of the same as yours to win the small prize: `20`
-    If you find a second chance, you are be able to scratch again
-    If you find a dollar, you will win it immediatly
+    Choose your animal, and then you are be able to scratch 3 times
+    Find 3 animals of the same as yours to win the big prize: `1000` ()
+    Find 2 animals of the same as yours to win the medium prize: `500` ()
+    Find 1 animal of the same as yours to win the small prize: `10` ()
     """
     embed.add_field(name="1️⃣ Diamonds", value=DIAMONDS_HTP, inline=False)
     embed.add_field(name="2️⃣ 3️ in a row", value=THREE_IN_A_ROW_HTP, inline=False)
@@ -349,7 +347,6 @@ class Economy(commands.Cog, Scratchcards, General, Roulette, Slots):
         if self.db[user_id]["balance"] - 10 < 0:
           await self.send_basic_embed(ctx, "❌ You don't have enought money to make that bet!")
         else:
-          return
           self.db[user_id]["balance"] -= 10
-          #await self.sc_diamonds(ctx, embed, message)
+          await self.sc_animals(ctx, embed, message)
 

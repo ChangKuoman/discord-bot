@@ -2,24 +2,92 @@ from random import randint, choice
 
 class Scratchcards:
 
+  def pretty_game(self, game):
+    return f"""🟦🟦🟦🟦🟦🟦🟦
+    🟦⬇🟦⬇🟦⬇🟦
+    🟦{game[0]}🟦{game[1]}🟦{game[2]}🟦
+    🟦⬆🟦⬆🟦⬆🟦
+    🟦🟦🟦🟦🟦🟦🟦
+    """
+
+  async def sc_animals(self, ctx, embed, message):
+    # 4 animales, 3 rejas, prob ganar 3: 0.39%, prob ganar 2: 6.25%, prob ganar 1: 25%
+    embed.clear_fields()
+    await message.clear_reactions()
+
+    animals = ["🐶", "🐱", "🐰", "🐹"]
+    h_game = [choice(animals) for _ in range(3)]
+    game = ["💰", "💰", "💰"]
+
+    embed.add_field(name="ANIMALS SCRATCHCARD", value=self.pretty_game(game), inline=False)
+    await message.edit(embed=embed)
+
+    for i in animals:
+      await message.add_reaction(i)
+
+    def check_animals(reaction, user):
+          return (user == ctx.author
+                  and str(reaction.emoji) in animals #!
+                  and reaction.message.id == message.id)
+    while True:
+      try:
+        reaction, user = await self.CLIENT.wait_for("reaction_add", timeout=15.0, check=check_animals)
+        await message.remove_reaction(reaction, user)
+        break
+      except:
+        continue
+
+    chosen_animal = str(reaction.emoji)
+    embed.add_field(name="Chosen animal", value=chosen_animal, inline=False)
+    await message.edit(embed=embed)
+
+    for i in range(3):
+      await message.clear_reactions()
+      await message.add_reaction("✂️")
+
+      # wait to user input
+      def check_animal_sc(reaction, user):
+          return (user == ctx.author
+                  and str(reaction.emoji) in ["✂️"]
+                  and reaction.message.id == message.id)
+      while True:
+        try:
+          reaction, user = await self.CLIENT.wait_for("reaction_add", timeout=15.0, check=check_animal_sc)
+          await message.remove_reaction(reaction, user)
+          break
+        except:
+          continue
+
+      embed.clear_fields()
+      game[i] = h_game[i]
+
+      embed.add_field(name="ANIMALS SCRATCHCARD", value=self.pretty_game(game), inline=False)
+      embed.add_field(name="Chosen animal", value=chosen_animal, inline=False)
+      await message.edit(embed=embed)
+
+    await message.clear_reactions()
+
+    if h_game.count(chosen_animal) == 3:
+      win = 1000
+    elif h_game.count(chosen_animal) == 2:
+      win = 500
+    elif h_game.count(chosen_animal) == 1:
+      win = 10
+    if h_game.count(chosen_animal) != 0:
+      self.db[str(ctx.author.id)]["balance"] += win
+      embed.add_field(name="YOU WON", value=f"`{win}`", inline=False)
+      await message.edit(embed=embed)
+
+
   async def sc_3row(self, ctx, embed, message):
     embed.clear_fields()
     game = ["💰", "💰", "💰"]
     options = ["⚽", "🏀", "🎾", "🏈", "⚾", "🏐", "🏉", "🎱", "🎳"]
     h_game = [choice(options) for _ in range(3)]
 
-    def pretty_game(game):
-      return f"""🟦🟦🟦🟦🟦🟦🟦
-      🟦⬇🟦⬇🟦⬇🟦
-      🟦{game[0]}🟦{game[1]}🟦{game[2]}🟦
-      🟦⬆🟦⬆🟦⬆🟦
-      🟦🟦🟦🟦🟦🟦🟦
-      """
-
-
     for i in range(3):
       await message.clear_reactions()
-      embed.add_field(name="3 IN A ROW SCRATCHCARD", value=pretty_game(game), inline=False)
+      embed.add_field(name="3 IN A ROW SCRATCHCARD", value=self.pretty_game(game), inline=False)
       await message.edit(embed=embed)
 
       await message.add_reaction("✂️")
@@ -41,7 +109,7 @@ class Scratchcards:
       game[i] = h_game[i]
 
     await message.clear_reactions()
-    embed.add_field(name="3 IN A ROW SCRATCHCARD", value=pretty_game(game), inline=False)
+    embed.add_field(name="3 IN A ROW SCRATCHCARD", value=self.pretty_game(game), inline=False)
     await message.edit(embed=embed)
 
     if game[0] == game[1] and game[1] == game[2]:
