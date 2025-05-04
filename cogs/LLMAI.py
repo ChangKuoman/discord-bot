@@ -14,7 +14,7 @@ class LLMAI(commands.Cog):
 
     self.GEMINI_CLIENT = genai.Client(api_key=API_KEY)
     self.GEMINI_MODEL = "gemini-2.0-flash"
-    self.FILE_PATH = "gemini.mp3"
+    self.FILE_PATH = "assets/downloads/gemini.mp3"
 
   @commands.command(name="asks", help="Briefly answer a question using AI.")
   async def asks(self, ctx, *msg):
