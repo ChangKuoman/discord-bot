@@ -1,252 +1,52 @@
 {
-  "laptop": {
-    "name": "💻 Laptop",
-    "price": 2800,
-    "description": "Something"
-  },
-  "computer": {
-    "name": "🖥 Computer",
-    "price": 2800,
-    "description": "Something"
-  },
-  "keyboard": {
-    "name": "⌨ Keyboard",
-    "price": 2800,
-    "description": "Something"
-  },
-  "printer_machine": {
-    "name": "🖨 Printer Machine",
-    "price": 2800,
-    "description": "Something"
-  },
-  "mouse": {
-    "name": "🖱 Mouse",
-    "price": 2800,
-    "description": "Something"
-  },
-  "toolbox": {
-    "name": "🧰 Toolbox",
-    "price": 2800,
-    "description": "Something"
-  },
-  "fire_extinguisher": {
-    "name": "🧯 Fire Extinguisher",
-    "price": 2800,
-    "description": "Something"
-  },
-  "fire_engine": {
-    "name": "🚒 Fire Engine",
-    "price": 2800,
-    "description": "Something"
-  },
-  "ambulance": {
-    "name": "🚑 Ambulance",
-    "price": 2800,
-    "description": "Something"
-  },
-  "hammer": {
-    "name": "🔨 Hammer",
-    "price": 2800,
-    "description": "Something"
-  },
-  "bricks": {
-    "name": "🧱 Bricks",
-    "price": 2800,
-    "description": "Something"
-  },
-  "axe": {
-    "name": "🪓 Axe",
-    "price": 2800,
-    "description": "Something"
-  },
-  "wrench": {
-    "name": "🔧 Wrench",
-    "price": 2800,
-    "description": "Something"
-  },
-  "screw": {
-    "name": "🔩 Screw",
-    "price": 2800,
-    "description": "Something"
-  },
-  "chains": {
-    "name": "⛓ Chains",
-    "price": 2800,
-    "description": "Something"
-  },
-  "grains": {
-    "name": "🌾 Grains",
-    "price": 2800,
-    "description": "Something"
-  },
-  "knife": {
-    "name": "🔪 Knife",
-    "price": 2800,
-    "description": "Something"
-  },
-  "alcohol": {
-    "name": "🍾 Alcohol",
-    "price": 1,
-    "description": "Something"
-  },
-  "microphone": {
-    "name": "🎤 Microphone",
-    "price": 2800,
-    "description": "Something"
-  },
-  "movie_camara": {
-    "name": "🎥 Movie Camara",
-    "price": 2800,
-    "description": "Something"
-  },
-  "disk": {
-    "name": "💿 Disk",
-    "price": 2800,
-    "description": "Something"
-  },
-  "crayon": {
-    "name": "🖍 Crayon",
-    "price": 2800,
-    "description": "Something"
-  },
-  "pencil": {
-    "name": "✏ Pencil",
-    "price": 2800,
-    "description": "Something"
-  },
-  "paint_brush": {
-    "name": "🖌 Paint Brush",
-    "price": 2800,
-    "description": "Something"
-  },
-  "ruler": {
-    "name": "📏 Ruler",
-    "price": 2800,
-    "description": "Something"
-  },
-  "scissor": {
-    "name": "✂ Scissor",
-    "price": 2800,
-    "description": "Something"
-  },
-  "apple": {
-    "name": "🍎 Apple",
-    "price": 2800,
-    "description": "Something"
-  },
-  "trash_can": {
-    "name": "🗑 Trash Can",
-    "price": 2800,
-    "description": "Something"
-  },
-  "clipboard": {
-    "name": "📋 Clipboard",
-    "price": 2800,
-    "description": "Something"
-  },
-  "file_cabinet": {
-    "name": "🗄 File Cabinet",
-    "price": 2800,
-    "description": "Something"
-  },
-  "graphs": {
-    "name": "📊 Graphs",
-    "price": 2800,
-    "description": "Something"
-  },
-  "microscope": {
-    "name": "🔬 Microscope",
-    "price": 2800,
-    "description": "Something"
-  },
-  "adn": {
-    "name": "🧬 ADN",
-    "price": 2800,
-    "description": "Something"
-  },
-  "test_tube": {
-    "name": "🧪 Test Tube",
-    "price": 2800,
-    "description": "Something"
-  },
-  "petri_dish": {
-    "name": "🧫 Petri Dish",
-    "price": 2800,
-    "description": "Something"
-  },
-  "radio": {
-    "name": "📻 Radio",
-    "price": 2800,
-    "description": "Something"
-  },
-  "satellite_antenna": {
-    "name": "📡 Satellite Antenna",
-    "price": 2800,
-    "description": "Something"
-  },
-  "stethoscope": {
-    "name": "🩺 Stethoscope",
-    "price": 2800,
-    "description": "Something"
-  },
-  "adhesive_bandage": {
-    "name": "🩹 Adhesive Bandage",
-    "price": 2800,
-    "description": "Something"
-  },
-  "syringe": {
-    "name": "💉 Syringe",
-    "price": 2800,
-    "description": "Something"
-  },
-  "thermometer": {
-    "name": "🌡 Thermometer",
-    "price": 2800,
-    "description": "Something"
-  },
-  "airplane": {
-    "name": "✈️ Airplane",
-    "price": 2800,
-    "description": "Something"
-  },
-  "world_map": {
-    "name": "🗺 World Map",
-    "price": 2800,
-    "description": "Something"
-  },
-  "dagger": {
-    "name": "🗡 Dagger",
-    "price": 2800,
-    "description": "Something"
-  },
-  "crystal_ball": {
-    "name": "🔮 Crystal Ball",
-    "price": 2800,
-    "description": "Something"
-  },
-  "turkish_eye": {
-    "name": "🧿 Turkish Eye",
-    "price": 2800,
-    "description": "Something"
-  },
-  "athletic_shoe": {
-    "name": "👟 Athletic Shoe",
-    "price": 2800,
-    "description": "Something"
-  },
-  "barber_pole": {
-    "name": "💈 Barber Pole",
-    "price": 2800,
-    "description": "Something"
-  },
-  "soap": {
-    "name": "🧼 Soap",
-    "price": 2800,
-    "description": "Something"
-  },
-  "police_car": {
-    "name": "🚓 Police car",
-    "price": 2800,
-    "description": "Something"
-  }
+  "hoodie": {"name": "🧥 Hoodie", "price": 1800, "description": "Cozy hoodie perfect for chilly days", "tier": "A"},
+  "ripped_jeans": {"name": "👖 Ripped Jeans", "price": 1500, "description": "Trendy jeans with stylish rips", "tier": "B"},
+  "leather_jacket": {"name": "🧥 Leather Jacket", "price": 2800, "description": "Classic black leather jacket with attitude", "tier": "S"},
+  "sneakers": {"name": "👟 Sneakers", "price": 1200, "description": "Comfortable and stylish everyday shoes", "tier": "B"},
+  "beanie": {"name": "🧢 Beanie", "price": 900, "description": "Warm knitted cap for casual wear", "tier": "C"},
+  "crop_top": {"name": "👚 Crop Top", "price": 1300, "description": "Short top for a cool and casual look", "tier": "B"},
+  "long_skirt": {"name": "👗 Long Skirt", "price": 1700, "description": "Elegant and flowing skirt for casual or formal wear", "tier": "A"},
+  "flannel_shirt": {"name": "👕 Flannel Shirt", "price": 1600, "description": "Plaid flannel shirt, soft and comfy", "tier": "B"},
+  "bucket_hat": {"name": "👒 Bucket Hat", "price": 1100, "description": "Trendy hat to top off your outfit", "tier": "C"},
+  "combat_boots": {"name": "🥾 Combat Boots", "price": 2000, "description": "Tough boots with a bold statement", "tier": "A"},
+  "fingerless_gloves": {"name": "🧤 Fingerless Gloves", "price": 1044, "description": "Warm and edgy gloves with open fingers", "tier": "C"},
+  "patterned_socks": {"name": "🧦 Patterned Socks", "price": 1261, "description": "Colorful socks with fun designs", "tier": "B"},
+  "puffer_jacket": {"name": "🧥 Puffer Jacket", "price": 1738, "description": "Thick jacket great for winter", "tier": "A"},
+  "cargo_shorts": {"name": "🩳 Cargo Shorts", "price": 1586, "description": "Loose shorts with plenty of pockets", "tier": "B"},
+  "swimsuit": {"name": "🩱 Swimsuit", "price": 1447, "description": "One-piece swimsuit perfect for the beach", "tier": "B"},
+  "sunglasses": {"name": "🕶️ Sunglasses", "price": 1576, "description": "Shades to keep the sun out and style in", "tier": "B"},
+  "kimono": {"name": "👘 Kimono", "price": 1887, "description": "Light, flowing robe with beautiful patterns", "tier": "A"},
+  "tank_top": {"name": "🎽 Tank Top", "price": 1787, "description": "Lightweight top for warm days", "tier": "A"},
+  "ballet_flats": {"name": "🥿 Ballet Flats", "price": 1244, "description": "Simple and elegant footwear", "tier": "B"},
+  "scarf": {"name": "🧣 Scarf", "price": 1860, "description": "Stylish scarf to complete your outfit", "tier": "A"},
+  "baseball_cap": {"name": "🧢 Baseball Cap", "price": 961, "description": "Classic cap with adjustable fit", "tier": "C"},
+  "sandals": {"name": "👡 Sandals", "price": 1807, "description": "Open-toed footwear for summer", "tier": "A"},
+  "loafers": {"name": "👞 Loafers", "price": 1825, "description": "Comfortable slip-on shoes for any occasion", "tier": "A"},
+  "trench_coat": {"name": "🧥 Trench Coat", "price": 2506, "description": "Long coat with a sleek, mysterious look", "tier": "S"},
+  "mini_dress": {"name": "👗 Mini Dress", "price": 2486, "description": "Short dress perfect for casual events", "tier": "S"},
+  "graphic_tee": {"name": "👕 Graphic Tee", "price": 1245, "description": "T-shirt with a bold printed design", "tier": "B"},
+  "high_tops": {"name": "👟 High-Tops", "price": 1041, "description": "Sneakers that rise above the ankle", "tier": "C"},
+  "skinny_jeans": {"name": "👖 Skinny Jeans", "price": 1551, "description": "Tight-fitting jeans for a sleek look", "tier": "B"},
+  "tote_bag": {"name": "👜 Tote Bag", "price": 1746, "description": "Large bag to carry your daily essentials", "tier": "A"},
+  "wide-brim_hat": {"name": "👒 Wide-brim Hat", "price": 1522, "description": "Fashionable hat for sunny days", "tier": "B"},
+  "bowtie_shirt": {"name": "👔 Bowtie Shirt", "price": 1214, "description": "Shirt with a built-in bowtie for flair", "tier": "B"},
+  "satin_robe": {"name": "👘 Satin Robe", "price": 1641, "description": "Silky smooth robe for lounging", "tier": "B"},
+  "bell_bottoms": {"name": "👖 Bell Bottoms", "price": 1710, "description": "Retro-style pants with flared legs", "tier": "A"},
+  "tie-dye_tee": {"name": "👕 Tie-Dye Tee", "price": 1228, "description": "Colorful shirt with swirling patterns", "tier": "B"},
+  "mittens": {"name": "🧤 Mittens", "price": 1164, "description": "Warm and cozy mittens for cold weather", "tier": "C"},
+  "windbreaker": {"name": "🧥 Windbreaker", "price": 1627, "description": "Light jacket that resists the wind", "tier": "B"},
+  "snapback_cap": {"name": "🧢 Snapback Cap", "price": 1064, "description": "Flat-brim cap with adjustable snap", "tier": "C"},
+  "knee-high_socks": {"name": "🧦 Knee-high Socks", "price": 1113, "description": "Long socks for warmth and style", "tier": "C"},
+  "wrap_dress": {"name": "👗 Wrap Dress", "price": 2700, "description": "Dress that ties at the waist", "tier": "S"},
+  "dance_shoes": {"name": "🩰 Dance Shoes", "price": 1707, "description": "Soft shoes perfect for movement", "tier": "A"},
+  "crossbody_bag": {"name": "👜 Crossbody Bag", "price": 1615, "description": "Compact bag worn across the chest", "tier": "B"},
+  "platform_sneakers": {"name": "👟 Platform Sneakers", "price": 1722, "description": "Elevated shoes for a bold look", "tier": "A"},
+  "infinity_scarf": {"name": "🧣 Infinity Scarf", "price": 950, "description": "Looped scarf for stylish layering", "tier": "C"},
+  "trucker_hat": {"name": "🧢 Trucker Hat", "price": 1466, "description": "Mesh-back cap with structured front", "tier": "B"},
+  "festival_kimono": {"name": "👘 Festival Kimono", "price": 1755, "description": "Light robe for stylish layering", "tier": "A"},
+  "henley_shirt": {"name": "👕 Henley Shirt", "price": 1185, "description": "Shirt with a buttoned neckline", "tier": "C"},
+  "slip_dress": {"name": "👗 Slip Dress", "price": 2695, "description": "Minimalist dress with thin straps", "tier": "S"},
+  "leather_gloves": {"name": "🧤 Leather Gloves", "price": 1592, "description": "Sleek gloves for warmth and style", "tier": "B"},
+  "joggers": {"name": "👖 Joggers", "price": 1544, "description": "Comfortable athletic-style pants", "tier": "B"},
+  "fuzzy_socks": {"name": "🧦 Fuzzy Socks", "price": 1702, "description": "Ultra-soft socks for staying warm", "tier": "A"}
 }
