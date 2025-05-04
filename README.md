@@ -44,7 +44,7 @@ Here are some previews of Foca Bot in action:
 <p align="center">
   <img src="assets/img/ask.png" alt="Answer using AI" width="40%">
   <img src="assets/img/asktts.png" alt="Answer using AI and TTS" width="40%"><br>
-  <em>Answering questions using AI adn TTS</em>
+  <em>Answering questions using AI and TTS</em>
 </p>
 
 ---
