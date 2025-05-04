@@ -20,7 +20,7 @@ class LLMAI(commands.Cog):
   async def asks(self, ctx, *msg):
     msg = " ".join(msg)
     response = self.GEMINI_CLIENT.models.generate_content(
-        model=self.GEMINI_MODEL, contents=f"In just 1 paragraph: {msg}"
+        model=self.GEMINI_MODEL, contents=f"In just 1 paragraph (less than 500 characters): {msg}"
     )
     answer = response.text
 
@@ -35,7 +35,7 @@ class LLMAI(commands.Cog):
   async def ask(self, ctx, *msg):
     msg = " ".join(msg)
     response = self.GEMINI_CLIENT.models.generate_content(
-        model=self.GEMINI_MODEL, contents=f"{msg}"
+        model=self.GEMINI_MODEL, contents=f"In less than 4096 characters: {msg}"
     )
     answer = response.text
 
@@ -50,21 +50,20 @@ class LLMAI(commands.Cog):
   async def asktts(self, ctx, *msg):
     msg = " ".join(msg)
     response = self.GEMINI_CLIENT.models.generate_content(
-        model=self.GEMINI_MODEL, contents=f"In just 1 paragraph: {msg}"
+        model=self.GEMINI_MODEL, contents=f"In less than 4096 characters: {msg}"
     )
     answer = response.text
     tts = gTTS(answer, lang='en')
     tts.save(self.FILE_PATH)
 
     embed = discord.Embed(
-      title="FOCA-BOT ANSWERS",
+      title="FOCA-BOT ANSWERS: TRANSCRIPT",
+      description=answer,
       color=self.COLOR
     )
 
     if ctx.author.voice is None:
       embed.set_footer(text="❌ You're not in a voice channel!")
-      embed.add_field(name="ANSWER", value=answer)
-      await ctx.send(embed=embed)
     else:
       voice_client = ctx.guild.voice_client
       if voice_client is None:
@@ -72,17 +71,11 @@ class LLMAI(commands.Cog):
         voice_client = await channel.connect()
         voice_client.play(discord.FFmpegPCMAudio(self.FILE_PATH))
 
-        embed.add_field(name="=== TRANSCRIPTION ===", value=answer)
-        await ctx.send(embed=embed)
-
       elif voice_client.is_playing():
         embed.set_footer(text="❌ You're already playing audio!")
-        embed.add_field(name="ANSWER", value=answer)
-        await ctx.send(embed=embed)
 
       elif ctx.guild.voice_client.channel != ctx.author.voice.channel:
         await voice_client.move_to(ctx.author.voice.channel)
         voice_client.play(discord.FFmpegPCMAudio(self.FILE_PATH))
 
-        embed.add_field(name="=== TRANSCRIPTION ===", value=answer)
-        await ctx.send(embed=embed)
+    await ctx.send(embed=embed)
