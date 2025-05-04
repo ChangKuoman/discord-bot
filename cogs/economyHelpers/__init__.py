@@ -1,0 +1,1 @@
+from .Scratchcards import Scratchcards

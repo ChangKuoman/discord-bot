@@ -4,13 +4,11 @@ from random import randint, choice, shuffle
 from datetime import datetime, timedelta
 import asyncio
 import json
-
-# Creates economy in database
-#if "economy" not in db.keys():
-#  db["economy"] = {}
+import shelve
+from .economyHelpers import Scratchcards
 
 # Class for discord Economy
-class Economy(commands.Cog):
+class Economy(commands.Cog, Scratchcards):
   """Commands for economy in server"""
 
   def __init__(self, client):
@@ -21,6 +19,10 @@ class Economy(commands.Cog):
     self.UPPER_DAILY = 50
     self.STORE_PAGINATION = 3
     self.INVENTORY_PAGINATION = 3
+    self.db = shelve.open("assets/econ/economy", writeback=True)
+
+  def __del__(self):
+    self.db.close()
 
   #~~~~~~~~~~~~~~~~~~~~ USEFUL FUNCTIONS ~~~~~~~~~~~~~~~~~~~~
   async def send_basic_embed(self, ctx, msg):
@@ -28,7 +30,7 @@ class Economy(commands.Cog):
     await ctx.send(embed=embed)
 
   def create_id(self, id):
-    db["economy"][id] = {
+    self.db[id] = {
       "balance": 0,
       "inventory": {},
       "daily": {
@@ -95,23 +97,23 @@ class Economy(commands.Cog):
   )
   async def daily(self, ctx):
     user_id = str(ctx.author.id)
-    if user_id not in db["economy"].keys():
+    if user_id not in self.db.keys():
       self.create_id(user_id)
 
     today_datetime, yesterday_datetime, time_til_tomorrow = self.get_dates()
-    last_date_claimed = db["economy"][user_id]["daily"]["last_claimed"]
+    last_date_claimed = self.db[user_id]["daily"]["last_claimed"]
 
     if self.can_claim(today_datetime, last_date_claimed):
       # add streak if have
       if self.have_streak(yesterday_datetime, last_date_claimed):
-        db["economy"][user_id]["daily"]["streak"] += 1
+        self.db[user_id]["daily"]["streak"] += 1
       else:
-        db["economy"][user_id]["daily"]["streak"] = 1
+        self.db[user_id]["daily"]["streak"] = 1
       # add coins
       amount = randint(self.LOWER_DAILY, self.UPPER_DAILY)
-      db["economy"][user_id]["balance"] += amount
-      db["economy"][user_id]["daily"]["last_claimed"] = str(today_datetime)
-      db["economy"][user_id]["daily"]["total_claimed"] += 1
+      self.db[user_id]["balance"] += amount
+      self.db[user_id]["daily"]["last_claimed"] = str(today_datetime)
+      self.db[user_id]["daily"]["total_claimed"] += 1
       # embed message
       embed = Embed(title="💸 Daily Claim",
               description=f"**{ctx.author.display_name}** claim their daily: `{amount}`",
@@ -122,7 +124,7 @@ class Economy(commands.Cog):
               description=f"**{ctx.author.display_name}** already claimed their daily",
               color=self.COLOR)
     # add last fields and send
-    streak = db["economy"][user_id]["daily"]["streak"]
+    streak = self.db[user_id]["daily"]["streak"]
     embed.add_field(name="Next claim in", value=f"`{time_til_tomorrow}`", inline=True)
     embed.add_field(name="Streak", value=f"`{streak}`", inline=True)
     await ctx.send(embed=embed)
@@ -135,10 +137,10 @@ class Economy(commands.Cog):
   )
   async def balance(self, ctx):
     user_id = str(ctx.author.id)
-    if user_id not in db["economy"].keys():
+    if user_id not in self.db.keys():
       self.create_id(user_id)
     embed = Embed(title=f"⚖️ {ctx.author.display_name}'s Balance",
-                  description=f"foca-coins: `{db['economy'][user_id]['balance']}`",
+                  description=f"foca-coins: `{self.db[user_id]['balance']}`",
                   color=self.COLOR)
     await ctx.send(embed=embed)
 
@@ -149,7 +151,7 @@ class Economy(commands.Cog):
   )
   async def slots(self, ctx, amount=None):
     user_id = str(ctx.author.id)
-    if user_id not in db["economy"].keys():
+    if user_id not in self.db.keys():
       self.create_id(user_id)
 
     # check amount to bet
@@ -157,7 +159,7 @@ class Economy(commands.Cog):
       await self.send_basic_embed(ctx, "❌ Amount is required!")
     elif amount.isdigit() == False or int(amount) <= 0:
       await self.send_basic_embed(ctx, "❌ Amount is not valid!")
-    elif db["economy"][user_id]["balance"] - int(amount) < 0:
+    elif self.db[user_id]["balance"] - int(amount) < 0:
       await self.send_basic_embed(ctx, "❌ You don't have enought money to make that bet!")
     else:
       # send message of slots
@@ -204,7 +206,7 @@ class Economy(commands.Cog):
         elif str(reaction.emoji) == "▶️":
           options = ["🍒", "🍉", "🍇", "🍊", "🍓", "7️⃣"]
           game = ["⬜", "⬜", "⬜"]
-          db["economy"][user_id]["balance"] -= amount
+          self.db[user_id]["balance"] -= amount
           await message.clear_reactions()
           embed.clear_fields()
           await message.edit(embed=embed)
@@ -248,7 +250,7 @@ class Economy(commands.Cog):
 
           # send message
           if amount > 0:
-            db["economy"][user_id]["balance"] += amount
+            self.db[user_id]["balance"] += amount
           embed.add_field(name=text_to_send, value=f"`{amount}`", inline=False)
           await message.edit(embed=embed)
 
@@ -259,7 +261,7 @@ class Economy(commands.Cog):
   )
   async def roulette(self, ctx, amount=None):
     user_id = str(ctx.author.id)
-    if user_id not in db["economy"].keys():
+    if user_id not in self.db.keys():
       self.create_id(user_id)
 
     # check amount to bet
@@ -267,7 +269,7 @@ class Economy(commands.Cog):
       await self.send_basic_embed(ctx, "❌ Amount is required!")
     elif amount.isdigit() == False or int(amount) <= 0:
       await self.send_basic_embed(ctx, "❌ Amount is not valid!")
-    elif db["economy"][user_id]["balance"] - int(amount) < 0:
+    elif self.db[user_id]["balance"] - int(amount) < 0:
       await self.send_basic_embed(ctx, "❌ You don't have enought money to make that bet!")
     else:
       # send message of roulette
@@ -310,7 +312,7 @@ class Economy(commands.Cog):
           await message.edit(embed=embed)
         # start game
         elif str(reaction.emoji) == "▶️":
-          db["economy"][user_id]["balance"] -= amount
+          self.db[user_id]["balance"] -= amount
           options = ["🔴", "⚫"]*18
           options.append("⚪")
           place = randint(0, 36)
@@ -358,7 +360,7 @@ class Economy(commands.Cog):
 
           winner_color = options[(place+i)%37]
           if winner_color == chosen_color:
-            db["economy"][user_id]["balance"] += amount*2
+            self.db[user_id]["balance"] += amount*2
             embed.add_field(name="Winner!", value=f"`{amount*2}`")
           else:
             embed.add_field(name="Lost", value=f"`{amount}`")
@@ -426,7 +428,7 @@ class Economy(commands.Cog):
   )
   async def buy(self, ctx, *product):
     user_id = str(ctx.author.id)
-    if user_id not in db["economy"].keys():
+    if user_id not in self.db.keys():
       self.create_id(user_id)
 
     with open("assets/store.json", 'r') as file:
@@ -440,17 +442,17 @@ class Economy(commands.Cog):
       product_name = "_".join(product).lower()
       product = STORE[product_name]
 
-      user_inventory = db["economy"][user_id]["inventory"]
-      if db["economy"][user_id]["balance"] - product["price"] < 0:
+      user_inventory = self.db[user_id]["inventory"]
+      if self.db[user_id]["balance"] - product["price"] < 0:
         await self.send_basic_embed(ctx, "❌ Not enought money to buy product!")
       else:
         if product_name in user_inventory.keys():
           await self.send_basic_embed(ctx, "❌ You already have this product!")
         else:
-          db["economy"][user_id]["inventory"][product_name] = product
+          self.db[user_id]["inventory"][product_name] = product
           today_date = datetime.now() - timedelta(hours=5)
-          db["economy"][user_id]["inventory"][product_name]["obtained"] = f"{today_date.year}-{today_date.month}-{today_date.day}"
-          db["economy"][user_id]["balance"] -= product["price"]
+          self.db[user_id]["inventory"][product_name]["obtained"] = f"{today_date.year}-{today_date.month}-{today_date.day}"
+          self.db[user_id]["balance"] -= product["price"]
 
           embed = Embed(
             description=f"Bought: **{product['name']}**",
@@ -465,12 +467,12 @@ class Economy(commands.Cog):
   )
   async def inventory(self, ctx):
     user_id = str(ctx.author.id)
-    if user_id not in db["economy"].keys():
+    if user_id not in self.db.keys():
       self.create_id(user_id)
     embed = Embed(title=f"🎒 {ctx.author.display_name}'s Inventory",
                   color=self.COLOR)
 
-    list_items = [item for item in db["economy"][user_id]["inventory"].values()]
+    list_items = [item for item in self.db[user_id]["inventory"].values()]
 
     if len(list_items) == 0:
       embed.add_field(name="Objects", value="`You don't have any objects yet`", inline=False)
@@ -513,146 +515,13 @@ class Economy(commands.Cog):
           await message.edit(embed=embed)
           break
 
-  async def sc_diamonds(self, ctx, embed, message):
-    matrix = [[["⏺"] for _ in range(4)] for _ in range(4)]
-
-    def add_emoji(emoji, quantity, matrix):
-      count = 0
-      while count < quantity:
-        r_1, r_2 = randint(0, 3), randint(0, 3)
-        while len(matrix[r_1][r_2]) > 2:
-          r_1, r_2 = randint(0, 3), randint(0, 3)
-        matrix[r_1][r_2].append(emoji)
-        count += 1
-
-    add_emoji("💵", 5, matrix)
-    add_emoji("💎", 3, matrix)
-    add_emoji("2️⃣", 3, matrix)
-
-    embed.clear_fields()
-    def draw_game(matrix, marked_places):
-      numbers = ["1️⃣","2️⃣","3️⃣","4️⃣"]
-      letters = ["🇦", "🇧", "🇨", "🇩"]
-      empty = "🟦"
-      hole = "🕳️"
-      game = empty + "".join(numbers) + '\n'
-      for i in range(4):
-        game += letters[i]
-        for j in range(4):
-          if (i, j) in marked_places:
-            if len(matrix[i][j]) == 1:
-              game += hole
-            else:
-              game += matrix[i][j][1]
-          else:
-            game += matrix[i][j][0]
-        # salto de linea
-        if i != 3:
-          game += '\n'
-      return game
-
-    marked_places = []
-    q_diamonds = 0
-    opportunities = 3
-
-    game = draw_game(matrix, marked_places)
-    await message.clear_reactions()
-    embed.add_field(name="DIAMOND SCRATCHCARD", value=game, inline=False)
-    embed.add_field(name="OPPORTUNITIES", value=f"{opportunities}", inline=False)
-    await message.edit(embed=embed)
-
-    while opportunities != 0:
-
-      await message.add_reaction("1️⃣")
-      await message.add_reaction("2️⃣")
-      await message.add_reaction("3️⃣")
-      await message.add_reaction("4️⃣")
-
-      # wait to user input
-      def check_numbers_diamonds(reaction, user):
-        return (user == ctx.author
-                and str(reaction.emoji) in ["1️⃣", "2️⃣", "3️⃣", "4️⃣"]
-                and reaction.message.id == message.id)
-      while True:
-        try:
-          reaction, user = await self.CLIENT.wait_for("reaction_add", timeout=15.0, check=check_numbers_diamonds)
-          await message.remove_reaction(reaction, user)
-          break
-        except:
-          continue
-
-      number = str(reaction.emoji)
-      await message.clear_reactions()
-      await message.add_reaction("🇦")
-      await message.add_reaction("🇧")
-      await message.add_reaction("🇨")
-      await message.add_reaction("🇩")
-
-      # wait to user input
-      def check_letter_diamonds(reaction, user):
-        return (user == ctx.author
-                and str(reaction.emoji) in ["🇦", "🇧", "🇨", "🇩"]
-                and reaction.message.id == message.id)
-      while True:
-        try:
-          reaction, user = await self.CLIENT.wait_for("reaction_add", timeout=15.0, check=check_letter_diamonds)
-          await message.remove_reaction(reaction, user)
-          break
-        except:
-          continue
-
-      letter = str(reaction.emoji)
-      await message.clear_reactions()
-      dict_for_emojis = {
-        "1️⃣" : 0, "2️⃣" : 1, "3️⃣" : 2, "4️⃣" : 3,
-        "🇦" : 0, "🇧" : 1, "🇨" : 2, "🇩" : 3
-      }
-      i, j = dict_for_emojis[letter], dict_for_emojis[number]
-      if (i, j) in marked_places:
-        continue
-      marked_places.append((i, j))
-
-      embed.clear_fields()
-
-      if len(matrix[i][j]) > 1:
-        if matrix[i][j][1] == "2️⃣":
-          opportunities += 1
-        elif matrix[i][j][1] == "💵":
-          db["economy"][str(ctx.author.id)]["balance"] += 1
-          embed.add_field(name="IMMEDIATLY WON", value="`1`", inline=False)
-        else:
-          q_diamonds += 1
-      opportunities -= 1
-
-      game = draw_game(matrix, marked_places)
-      embed.add_field(name="DIAMOND SCRATCHCARD", value=game, inline=False)
-      embed.add_field(name="OPPORTUNITIES", value=f"{opportunities}", inline=False)
-      await message.edit(embed=embed)
-
-    if q_diamonds > 0:
-      won = 0
-      if q_diamonds == 1:
-        won = 10
-      elif q_diamonds == 2:
-        won = 100
-      elif q_diamonds == 3:
-        won = 500
-      db["economy"][str(ctx.author.id)]["balance"] += won
-
-      game = draw_game(matrix, marked_places)
-      embed.clear_fields()
-      embed.add_field(name="DIAMOND SCRATCHCARD", value=game, inline=False)
-      embed.add_field(name="OPPORTUNITIES", value=f"{opportunities}", inline=False)
-      embed.add_field(name="YOU WON", value=f"`{won}`", inline=False)
-      await message.edit(embed=embed)
-
   @commands.command(
     name="scratchcards",
     help="Many games of scratchcards"
   )
   async def scratchcards(self, ctx):
     user_id = str(ctx.author.id)
-    if user_id not in db["economy"].keys():
+    if user_id not in self.db.keys():
       self.create_id(user_id)
 
     # many games to play!
@@ -701,10 +570,10 @@ class Economy(commands.Cog):
 
     if not error:
       if str(reaction.emoji) == "1️⃣":
-        if db["economy"][user_id]["balance"] - 10 < 0:
+        if self.db[user_id]["balance"] - 10 < 0:
           await self.send_basic_embed(ctx, "❌ You don't have enought money to make that bet!")
         else:
-          db["economy"][user_id]["balance"] -= 10
+          self.db[user_id]["balance"] -= 10
           await self.sc_diamonds(ctx, embed, message)
 
 
