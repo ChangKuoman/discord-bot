@@ -184,7 +184,7 @@ class Economy(commands.Cog, Scratchcards, General, Roulette, Slots):
     if user_id not in self.db.keys():
       self.create_id(user_id)
 
-    with open("assets/store.json", 'r') as file:
+    with open("assets/store.json", 'r', encoding='utf-8') as file:
       STORE = json.load(file)
 
     if len(product) == 0:
