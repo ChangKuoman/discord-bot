@@ -281,20 +281,28 @@ class Economy(commands.Cog, Scratchcards, General, Roulette, Slots):
     # many games to play!
     embed = Embed(title="❓ Scratchcards ❓",
                   color=self.COLOR)
-    DIAMONDS_HTP = """Bet amount: `10`
+    DIAMONDS_HTP = """Bet amount: `20`
     How to play:
     You are able to scratch 3 times
     Find 3 diamonds to win the big prize: `500`
     Find 2 diamonds to win the medium prize: `100`
-    Find 1 diamond to win the small prize: `10`
-    If you find a second chance, you will be able to scratch again
+    Find 1 diamond to win the small prize: `20`
+    If you find a second chance, you are be able to scratch again
     If you find a dollar, you will win it immediatly
     """
-    THREE_IN_A_ROW_HTP = """
-
+    THREE_IN_A_ROW_HTP = """Bet amount: `5`
+    How to play:
+    You can scratch 3 times
+    Find 3 of the same object in a row to win the big prize: `5000`
     """
-    ANIMALS_HTP = """
-
+    ANIMALS_HTP = """Bet amount: `10`
+    How to play:
+    Scratch the first animal, this will be your animal, then you are be able to scratch 3 times
+    Find 3 animal of the same as yours to win the big prize: `1000`
+    Find 2 animal of the same as yours to win the medium prize: `500`
+    Find 1 animal of the same as yours to win the small prize: `20`
+    If you find a second chance, you are be able to scratch again
+    If you find a dollar, you will win it immediatly
     """
     embed.add_field(name="1️⃣ Diamonds", value=DIAMONDS_HTP, inline=False)
     embed.add_field(name="2️⃣ 3️ in a row", value=THREE_IN_A_ROW_HTP, inline=False)
@@ -324,16 +332,24 @@ class Economy(commands.Cog, Scratchcards, General, Roulette, Slots):
 
     if not error:
       if str(reaction.emoji) == "1️⃣":
+        if self.db[user_id]["balance"] - 20 < 0:
+          await self.send_basic_embed(ctx, "❌ You don't have enought money to make that bet!")
+        else:
+          self.db[user_id]["balance"] -= 20
+          await self.sc_diamonds(ctx, embed, message)
+
+      elif str(reaction.emoji) == "2️⃣":
+        if self.db[user_id]["balance"] - 5 < 0:
+          await self.send_basic_embed(ctx, "❌ You don't have enought money to make that bet!")
+        else:
+          self.db[user_id]["balance"] -= 5
+          await self.sc_3row(ctx, embed, message)
+
+      elif str(reaction.emoji) == "3️⃣":
         if self.db[user_id]["balance"] - 10 < 0:
           await self.send_basic_embed(ctx, "❌ You don't have enought money to make that bet!")
         else:
+          return
           self.db[user_id]["balance"] -= 10
-          await self.sc_diamonds(ctx, embed, message)
-
-
-      elif str(reaction.emoji) == "2️⃣":
-        pass
-      elif str(reaction.emoji) == "3️⃣":
-        pass
-
+          #await self.sc_diamonds(ctx, embed, message)
 

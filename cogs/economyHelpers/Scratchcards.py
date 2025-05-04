@@ -1,6 +1,54 @@
-from random import randint
+from random import randint, choice
 
 class Scratchcards:
+
+  async def sc_3row(self, ctx, embed, message):
+    embed.clear_fields()
+    game = ["💰", "💰", "💰"]
+    options = ["⚽", "🏀", "🎾", "🏈", "⚾", "🏐", "🏉", "🎱", "🎳"]
+    h_game = [choice(options) for _ in range(3)]
+
+    def pretty_game(game):
+      return f"""🟦🟦🟦🟦🟦🟦🟦
+      🟦⬇🟦⬇🟦⬇🟦
+      🟦{game[0]}🟦{game[1]}🟦{game[2]}🟦
+      🟦⬆🟦⬆🟦⬆🟦
+      🟦🟦🟦🟦🟦🟦🟦
+      """
+
+
+    for i in range(3):
+      await message.clear_reactions()
+      embed.add_field(name="3 IN A ROW SCRATCHCARD", value=pretty_game(game), inline=False)
+      await message.edit(embed=embed)
+
+      await message.add_reaction("✂️")
+
+      # wait to user input
+      def check_3row_sc(reaction, user):
+          return (user == ctx.author
+                  and str(reaction.emoji) in ["✂️"]
+                  and reaction.message.id == message.id)
+      while True:
+        try:
+          reaction, user = await self.CLIENT.wait_for("reaction_add", timeout=15.0, check=check_3row_sc)
+          await message.remove_reaction(reaction, user)
+          break
+        except:
+          continue
+
+      embed.clear_fields()
+      game[i] = h_game[i]
+
+    await message.clear_reactions()
+    embed.add_field(name="3 IN A ROW SCRATCHCARD", value=pretty_game(game), inline=False)
+    await message.edit(embed=embed)
+
+    if game[0] == game[1] and game[1] == game[2]:
+      self.db[str(ctx.author.id)]["balance"] += 5000
+      embed.add_field(name="YOU WON", value="`5000`", inline=False)
+      await message.edit(embed=embed)
+
   async def sc_diamonds(self, ctx, embed, message):
       matrix = [[["⏺"] for _ in range(4)] for _ in range(4)]
 
