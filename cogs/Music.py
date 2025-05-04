@@ -303,9 +303,17 @@ class Music(commands.Cog):
 
   @commands.command(name="play", aliases=["p", "add"], help="Add to queue song [url song | url playlist | search]")
   async def play(self, ctx, *msg):
-
     guild_id = str(ctx.guild.id)
     self.check_guild_id(guild_id)
+
+    if ctx.voice_client is not None:
+      if ctx.voice_client.is_playing() and self.servers[guild_id]["vc"] is None:
+        embed = discord.Embed(
+          description="❌ Voice chat is already being used, try later!",
+          color=self.COLOR
+        )
+        await ctx.send(embed=embed)
+        return
 
     if ctx.author.voice is None:
       await self.send_basic_embed(ctx, "❌ You're not in a voice channel!")
