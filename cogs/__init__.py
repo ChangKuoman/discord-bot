@@ -3,7 +3,6 @@ from .General import General
 from .Help import Help
 from .Economy import Economy
 from .LLMAI import LLMAI
-#from .DnD import DnD
 from .StudyBuddy import StudyBuddy
 
 cogs_list = [
@@ -12,7 +11,6 @@ cogs_list = [
   Help,
   Economy,
   LLMAI,
-#  DnD,
   StudyBuddy
 ]
 
