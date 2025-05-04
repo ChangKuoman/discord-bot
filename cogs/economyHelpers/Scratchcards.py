@@ -11,7 +11,6 @@ class Scratchcards:
     """
 
   async def sc_animals(self, ctx, embed, message):
-    # 4 animales, 3 rejas, prob ganar 3: 0.39%, prob ganar 2: 6.25%, prob ganar 1: 25%
     embed.clear_fields()
     await message.clear_reactions()
 
@@ -77,7 +76,6 @@ class Scratchcards:
       self.db[str(ctx.author.id)]["balance"] += win
       embed.add_field(name="YOU WON", value=f"`{win}`", inline=False)
       await message.edit(embed=embed)
-
 
   async def sc_3row(self, ctx, embed, message):
     embed.clear_fields()

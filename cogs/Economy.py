@@ -281,30 +281,30 @@ class Economy(commands.Cog, Scratchcards, General, Roulette, Slots):
     # many games to play!
     embed = Embed(title="❓ Scratchcards ❓",
                   color=self.COLOR)
-    DIAMONDS_HTP = """Bet amount: `20`
-    How to play:
-    You are able to scratch 3 times
-    Find 3 diamonds to win the big prize: `500` ()
-    Find 2 diamonds to win the medium prize: `100` ()
-    Find 1 diamond to win the small prize: `20` ()
-    If you find a second chance, you are be able to scratch again
-    If you find a dollar, you will win it immediatly
+    DIAMONDS_HTP = """**Bet amount:** `20`
+    Hᴏᴡ ᴛᴏ ᴘʟᴀʏ:
+    Yᴏᴜ ᴀʀᴇ ᴀʙʟᴇ ᴛᴏ sᴄʀᴀᴛᴄʜ 3 ᴛɪᴍᴇs
+    Fɪɴᴅ 3 💎, ᴡɪɴ `500` - **0.18%**
+    Fɪɴᴅ 2 💎, ᴡɪɴ `100` - **6.96%**
+    Fɪɴᴅ 1 💎, ᴡɪɴ `20` - **41.79%**
+    Fɪɴᴅ ᴀ 💵, ᴡɪɴ `1` ɪᴍᴍᴇᴅɪᴀᴛʟʏ - **70.74%**
+    Fɪɴᴅ ᴀ 2️⃣ ᴄʜᴀɴᴄᴇ ᴛᴏ sᴄʀᴀᴛᴄʜ ᴀɢᴀɪɴ - **48.93%**
     """
-    THREE_IN_A_ROW_HTP = """Bet amount: `5`
-    How to play:
-    You can scratch 3 times (0.13%)
-    Find 3 of the same object in a row to win the big prize: `5000`
+    THREE_IN_A_ROW_HTP = """**Bet amount:** `5`
+    Hᴏᴡ ᴛᴏ ᴘʟᴀʏ:
+    Sᴄʀᴀᴛᴄʜ 3 ᴛɪᴍᴇs
+    Fɪɴᴅ 3 ᴏꜰ ᴛʜᴇ sᴀᴍᴇ ᴏʙᴊᴇᴄᴛ ɪɴ ᴀ ʀᴏᴡ, ᴡɪɴ `5000` - **0.13%**
     """
-    ANIMALS_HTP = """Bet amount: `10`
-    How to play:
-    Choose your animal, and then you are be able to scratch 3 times
-    Find 3 animals of the same as yours to win the big prize: `1000` ()
-    Find 2 animals of the same as yours to win the medium prize: `500` ()
-    Find 1 animal of the same as yours to win the small prize: `10` ()
+    ANIMALS_HTP = """**Bet amount:** `10`
+    Hᴏᴡ ᴛᴏ ᴘʟᴀʏ:
+    Cʜᴏᴏsᴇ ʏᴏᴜʀ ᴀɴɪᴍᴀʟ, ᴀɴᴅ ᴛʜᴇɴ ʏᴏᴜ ᴡɪʟʟ ʙᴇ ᴀʙʟᴇ ᴛᴏ sᴄʀᴀᴛᴄʜ 3 ᴛɪᴍᴇs
+    Fɪɴᴅ 3 ᴀɴɪᴍᴀʟs ᴏꜰ ᴛʜᴇ sᴀᴍᴇ ᴀs ʏᴏᴜʀs, ᴡɪɴ `1000` - **0.39%**
+    Fɪɴᴅ 2 ᴀɴɪᴍᴀʟs ᴏꜰ ᴛʜᴇ sᴀᴍᴇ ᴀs ʏᴏᴜʀs, ᴡɪɴ `500` - **6.25%**
+    Fɪɴᴅ 1 ᴀɴɪᴍᴀʟ ᴏꜰ ᴛʜᴇ sᴀᴍᴇ ᴀs ʏᴏᴜʀs, ᴡɪɴ `10` - **25%**
     """
-    embed.add_field(name="1️⃣ Diamonds", value=DIAMONDS_HTP, inline=False)
-    embed.add_field(name="2️⃣ 3️ in a row", value=THREE_IN_A_ROW_HTP, inline=False)
-    embed.add_field(name="3️⃣ Animals", value=ANIMALS_HTP, inline=False)
+    embed.add_field(name="1️⃣ **Diamonds** 💎", value=DIAMONDS_HTP, inline=False)
+    embed.add_field(name="2️⃣ **3 in a row** ⚽", value=THREE_IN_A_ROW_HTP, inline=False)
+    embed.add_field(name="3️⃣ **Animals** 🐶", value=ANIMALS_HTP, inline=False)
     embed.set_footer(text=f"Player: {ctx.author.name}")
     message = await ctx.send(embed=embed)
 
