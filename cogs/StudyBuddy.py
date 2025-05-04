@@ -11,16 +11,14 @@ class StudyBuddy(commands.Cog):
   def __init__(self, client):
     self.CLIENT = client
     self.COLOR = 0xcb1aee
+    self.FILE_PATH = "assets/downloads/studyBuddy/"
 
-    # initializes the setup for agent ai
     session_service = InMemorySessionService()
 
-    # Define constants for identifying the interaction context
     APP_NAME = "study_buddy_app"
     self.USER_ID = "user_1"
-    self.SESSION_ID = "session_001" # Using a fixed ID for simplicity
+    self.SESSION_ID = "session_001"
 
-    # Create the specific session where the conversation will happen
     session = session_service.create_session(
         app_name=APP_NAME,
         user_id=self.USER_ID,
@@ -28,8 +26,6 @@ class StudyBuddy(commands.Cog):
     )
 
     # === RUNNER ===
-
-    # Key Concept: Runner orchestrates the agent execution loop.
     self.runner = Runner(
         agent=study_buddy_agent, # The agent we want to run
         app_name=APP_NAME,   # Associates runs with our app
@@ -53,20 +49,22 @@ class StudyBuddy(commands.Cog):
 
         return final_response_text
 
-  @commands.command(name="study", help="Study command")
+  @commands.command(name="study", aliases=["stu"], help="Study command")
   async def study(self, ctx, *msg):
     msg = " ".join(msg)
 
-    if not ctx.message.attachments:
-        await ctx.send("Por favor adjunta un archivo PDF.")
-        return
+    if ctx.message.attachments:
+        attachment_list = []
+        for attachment in ctx.message.attachments:
+            if attachment.filename.endswith(".pdf"):
+                await attachment.save(f"{self.FILE_PATH}{attachment.filename}")
+                attachment_list.append(f"{self.FILE_PATH}{attachment.filename}")
 
-    for attachment in ctx.message.attachments:
-        if attachment.filename.endswith(".pdf"):
-            await attachment.save(attachment.filename)
-            await ctx.send(f"Archivo {attachment.filename} guardado.")
+        query = f"Read this file(s): {', '.join(attachment_list)}. {msg}"
+    else:
+        query = msg
 
-    res = await self.call_agent_async(query=msg,
+    res = await self.call_agent_async(query=query,
                             runner=self.runner,
                             user_id=self.USER_ID,
                             session_id=self.SESSION_ID)

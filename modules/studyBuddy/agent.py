@@ -1,5 +1,5 @@
 from google.adk.agents import Agent
-from .tools import get_weather
+from .tools import read_file
 from .sub_agents import greeting_agent, farewell_agent
 from .prompts import return_instructions
 
@@ -13,7 +13,7 @@ root_agent = Agent(
     model=MODEL_GEMINI_2_0_FLASH,
     description="The main coordinator agent. Handles study requests and delegates questions to specialists.",
     instruction=return_instructions(),
-    #tools=[get_weather],
+    tools=[read_file],
     sub_agents=[greeting_agent, farewell_agent]
     #output_key="last_weather_report"
 )
