@@ -171,6 +171,7 @@ class Music(commands.Cog):
     list_songs = self.servers[guild_id]["queue"]
     if len(list_songs) == 0:
       embed = embed.add_field(name="Songs:", value="`No songs in queue!`", inline=False)
+      await ctx.send(embed=embed)
     else:
       pages = [list_songs[i:i + self.QUEUE_PAGINATION] for i in range(0, len(list_songs), self.QUEUE_PAGINATION)]
       page = 0
