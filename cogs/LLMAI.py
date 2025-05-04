@@ -3,6 +3,7 @@ import discord
 import os
 from gtts import gTTS
 from google import genai
+import asyncio
 
 class LLMAI(commands.Cog):
   """Commands for using AI"""
@@ -69,7 +70,15 @@ class LLMAI(commands.Cog):
       if voice_client is None:
         channel = ctx.author.voice.channel
         voice_client = await channel.connect()
-        voice_client.play(discord.FFmpegPCMAudio(self.FILE_PATH))
+
+        def play_next(ctx):
+          coro = ctx.voice_client.disconnect()
+          fut = asyncio.run_coroutine_threadsafe(coro, self.CLIENT.loop)
+
+        voice_client.play(
+          discord.FFmpegPCMAudio(self.FILE_PATH),
+          after=lambda e: play_next(ctx)
+        )
 
       elif voice_client.is_playing():
         embed.set_footer(text="❌ You're already playing audio!")
