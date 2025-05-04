@@ -4,3 +4,4 @@ __pycache__
 .env
 test/
 assets/downloads/
+assets/econ/
