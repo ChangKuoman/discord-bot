@@ -127,7 +127,7 @@ class Economy(commands.Cog, Scratchcards, General, Roulette, Slots):
   async def store(self, ctx):
     embed = Embed(title="🏪 Foca's Store",
                   color=self.COLOR)
-    with open("assets/store.json", 'r') as file:
+    with open("assets/store.json", 'r', encoding='utf-8') as file:
       STORE = json.load(file)
     list_store = [item for item in STORE.values()]
     # [ list[i:i + pagination] for i in range (0, len(list), pagination) ]

@@ -58,9 +58,9 @@ class General:
                     continue
                 description += f"{' '.join(key.split('_')).title()}: `{value}`\n"
 
-        embed.add_field(
-            name=f"{object['name']}",
-            value=f"{description}",
-            inline=False
-        )
+            embed.add_field(
+                name=f"{object['name']}",
+                value=f"{description}",
+                inline=False
+            )
         embed.set_footer(text=f"Page {page + 1}/{len(pages)}")
