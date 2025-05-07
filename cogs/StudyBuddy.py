@@ -6,7 +6,7 @@ from google.adk.runners import Runner
 from google.genai import types
 
 class StudyBuddy(commands.Cog):
-  """Commands for DnD roleplaying game."""
+  """Commands for studying using AI agents."""
 
   def __init__(self, client):
     self.CLIENT = client
