@@ -18,7 +18,7 @@ class Economy(commands.Cog, Scratchcards, GeneralHelpers, Roulette, Slots):
     self.UPPER_DAILY = 50
     self.STORE_PAGINATION = 3
     self.INVENTORY_PAGINATION = 3
-    self.db = shelve.open("assets/econ/economy", writeback=True)
+    self.db = shelve.open("data/economy", writeback=True)
 
   def __del__(self):
     self.db.close()

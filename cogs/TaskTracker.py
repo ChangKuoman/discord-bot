@@ -8,7 +8,7 @@ class TaskTracker(commands.Cog):
   def __init__(self, client):
     self.CLIENT = client
     self.COLOR = 0x3480EB
-    self.db = shelve.open("assets/tasktracker/tasks", writeback=True)
+    self.db = shelve.open("data/tasks", writeback=True)
 
   def __del__(self):
     self.db.close()
@@ -53,7 +53,7 @@ class TaskTracker(commands.Cog):
     await ctx.send(f"Task added! Assigned to: {assigned_to}, Deadline: {date}, Title: {title}")
 
   @commands.command(name="tracker", help="Shows all tasks", aliases=["t", "tasks"])
-  async def tracker(self, ctx, arg=None):
+  async def tracker(self, ctx, args=None):
     # $tracker
 
     guild_name = str(ctx.guild.name)
@@ -61,7 +61,7 @@ class TaskTracker(commands.Cog):
     if guild_id not in self.db.keys():
         self.db[guild_id] = {'title': guild_name, 'tasks': {}, 'id': 1}
 
-    if args[0] == "all":
+    if args == "all":
       self.db[guild_id]['tasks'] = dict(sorted(self.db[guild_id]['tasks'].items(), key=lambda item: item[1]['deadline']))
 
       await ctx.send(f"**{guild_name}**\n" + "\n".join([
