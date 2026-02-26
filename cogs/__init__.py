@@ -4,14 +4,16 @@ from .Help import Help
 from .Economy import Economy
 from .LLMAI import LLMAI
 from .StudyBuddy import StudyBuddy
+from .TaskTracker import TaskTracker
 
 cogs_list = [
   Music,
   General,
   Help,
   Economy,
-  LLMAI,
-  StudyBuddy
+#  LLMAI,
+  StudyBuddy,
+  TaskTracker
 ]
 
 async def setup(client):
