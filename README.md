@@ -51,6 +51,14 @@ Here are some previews of Foca Bot in action:
 
 ## 🚀 Installation
 
+### 0. **.env** example
+
+```
+DISCORD_TOKEN=
+GOOGLE_API_KEY=
+GOOGLE_GENAI_USE_VERTEXAI=
+```
+
 ### 1. Install dependencies
 
 ```bash
@@ -70,6 +78,8 @@ pip install -r requirements.txt
 ```
 
 ### 2. Run the bot
+
+ffmpeg can be downloaded and included in the global PATH to avoid exporting it everytime.
 
 On Windows
 ```bash

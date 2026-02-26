@@ -16,6 +16,6 @@ async def on_ready():
 if __name__ == "__main__":
   try:
     load_dotenv()
-    client.run(os.getenv("token"))
+    client.run(os.getenv("DISCORD_TOKEN"))
   except Exception as e:
     print("Error: ", e)

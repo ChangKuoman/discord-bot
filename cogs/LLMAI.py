@@ -11,7 +11,7 @@ class LLMAI(commands.Cog):
   def __init__(self, client):
     self.CLIENT = client
     self.COLOR = 0xFF0000
-    API_KEY = os.getenv("API_KEY")
+    API_KEY = os.getenv("GOOGLE_API_KEY")
 
     self.GEMINI_CLIENT = genai.Client(api_key=API_KEY)
     self.GEMINI_MODEL = "gemini-2.0-flash"
