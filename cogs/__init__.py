@@ -3,7 +3,7 @@ from .General import General
 from .Help import Help
 from .Economy import Economy
 from .LLMAI import LLMAI
-from .StudyBuddy import StudyBuddy
+#from .StudyBuddy import StudyBuddy
 from .TaskTracker import TaskTracker
 
 cogs_list = [
@@ -11,8 +11,8 @@ cogs_list = [
   General,
   Help,
   Economy,
-#  LLMAI,
-  StudyBuddy,
+  LLMAI,
+#  StudyBuddy,
   TaskTracker
 ]
 

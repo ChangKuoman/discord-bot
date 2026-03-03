@@ -4,6 +4,9 @@ import os
 from gtts import gTTS
 from google import genai
 import asyncio
+from dotenv import load_dotenv
+
+load_dotenv()
 
 class LLMAI(commands.Cog):
   """Commands for using AI"""
@@ -14,7 +17,7 @@ class LLMAI(commands.Cog):
     API_KEY = os.getenv("GOOGLE_API_KEY")
 
     self.GEMINI_CLIENT = genai.Client(api_key=API_KEY)
-    self.GEMINI_MODEL = "gemini-2.0-flash"
+    self.GEMINI_MODEL = "gemma-3-27b-it" # prev model was deprecated
     self.FILE_PATH = "assets/downloads/gemini.mp3"
 
   @commands.command(name="asks", help="Briefly answer a question using AI.")
