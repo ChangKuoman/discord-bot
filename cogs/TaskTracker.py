@@ -1,6 +1,7 @@
 from discord.ext import commands
 from discord import Embed
 import shelve
+import re
 
 class TaskTracker(commands.Cog):
   """Task Tracker commands"""
@@ -13,31 +14,38 @@ class TaskTracker(commands.Cog):
   def __del__(self):
     self.db.close()
 
+  def create_guild_entry(self, guild_id, guild_name):
+    if guild_id not in self.db.keys():
+      self.db[guild_id] = {'title': guild_name, 'tasks': {}, 'id': 1}
+
   @commands.command(name="tadd", help="Adds a new task")
-  async def tadd(self, ctx, assigned_to, date, title0, *title1):
+  async def tadd(self, ctx, assigned_to=None, date=None, title0=None, *title1):
     # $tadd
 
-    #TODO: send messages as cute embeds
+    embed = Embed(title="Task Tracker - Foca Bot",
+                  description="",
+                  color=self.COLOR)
+
     if not assigned_to or not date or not title0:
-      await ctx.send("Please provide all the required arguments: assigned_to, date, title")
-      return
+      embed.description = "Please provide all the required arguments: assigned_to, date, title"
 
     date = date.replace("/", "-")
     title = title0 + " " + " ".join(title1)
 
     if not assigned_to.startswith("<@") or not assigned_to.endswith(">"):
-      await ctx.send("Please mention a user to assign the task to.")
-      return
+      embed.description = "Please mention a user to assign the task to."
 
-    # TODO: validate date format more
-    if len(date.split("-")) != 3 or not all(part.isdigit() for part in date.split("-")):
-      await ctx.send("Please provide a valid deadline for the task in the format YYYY-MM-DD.")
+    date_pattern = re.compile("((?:19|20)\\d\\d)-(0?[1-9]|1[012])-([12][0-9]|3[01]|0?[1-9])") # REGEX FOR YYYY-MM-DD
+    if not date_pattern.match(date):
+      embed.description = "Please provide a valid deadline for the task in the format YYYY-MM-DD."
+
+    if embed.description:
+      await ctx.send(embed=embed)
       return
 
     guild_name = str(ctx.guild.name)
     guild_id = str(ctx.guild.id)
-    if guild_id not in self.db.keys():
-      self.db[guild_id] = {'title': guild_name, 'tasks': {}, 'id': 1}
+    self.create_guild_entry(guild_id, guild_name)
 
     current_id = self.db[guild_id]['id']
     self.db[guild_id]['tasks'][current_id] = {
@@ -50,63 +58,71 @@ class TaskTracker(commands.Cog):
     }
     self.db[guild_id]['id'] += 1
 
-    await ctx.send(f"Task added! Assigned to: {assigned_to}, Deadline: {date}, Title: {title}")
+    embed.description = f"Task added! Assigned to: {assigned_to}, Deadline: {date}, Title: {title}"
+    await ctx.send(embed=embed)
 
   @commands.command(name="tracker", help="Shows all tasks", aliases=["t", "tasks"])
-  async def tracker(self, ctx, args=None):
+  async def tracker(self, ctx, arg=None):
     # $tracker
 
     guild_name = str(ctx.guild.name)
     guild_id = str(ctx.guild.id)
-    if guild_id not in self.db.keys():
-        self.db[guild_id] = {'title': guild_name, 'tasks': {}, 'id': 1}
+    self.create_guild_entry(guild_id, guild_name)
 
-    if args == "all":
-      self.db[guild_id]['tasks'] = dict(sorted(self.db[guild_id]['tasks'].items(), key=lambda item: item[1]['deadline']))
+    # this section will sort and filter
+    return_dict = self.db[guild_id]['tasks']
+    if arg == "all":
+      # returns all completed and in progress tasks sorted by deadline
+      return_dict = dict(sorted(self.db[guild_id]['tasks'].items(), key=lambda item: item[1]['deadline']))
+    elif arg is None:
+      # returns all in progress tasks sorted by deadline
+      return_dict = dict(sorted(
+        {task_id: task for task_id, task in self.db[guild_id]['tasks'].items() if task['status'] == 'in progress'}.items(),
+        key=lambda item: item[1]['deadline']
+      ))
+    elif arg.startswith("<@") and arg.endswith(">"):
+      # returns all tasks assigned to a specific user (NOT sorted)
+      return_dict = {task_id: task for task_id, task in self.db[guild_id]['tasks'].items() if task['assigned_to'] == arg}
+    else:
+      # returns all in progress tasks sorted by deadline
+      return_dict = dict(sorted(
+        {task_id: task for task_id, task in self.db[guild_id]['tasks'].items() if task['status'] == 'in progress'}.items(),
+        key=lambda item: item[1]['deadline']
+      ))
 
-      await ctx.send(f"**{guild_name}**\n" + "\n".join([
-          f"**{task_id}**. {task['title']} - Assigned to: {task['assigned_to']} - Deadline: {task['deadline']} - Status: {task['status']}"
-          for task_id, task in self.db[guild_id]['tasks'].items()
-      ]))
+    if not return_dict:
+      embed = Embed(title="Task Tracker - Foca Bot",
+                    description=f"No tasks found! Try another command")
+      await ctx.send(embed=embed)
       return
-
-    # TODO: this can be better
-    self.db[guild_id]['tasks'] = {
-        task_id: task for task_id, task in self.db[guild_id]['tasks'].items() if task['status'] == 'in progress'
-    }
-    if not self.db[guild_id]['tasks']:
-        await ctx.send(f"**{guild_name}**\nNo tasks found!")
-        return
-
-    self.db[guild_id]['tasks'] = dict(sorted(self.db[guild_id]['tasks'].items(), key=lambda item: item[1]['deadline']))
 
     # TODO: this needs to verify character limit / maybe paginate
     await ctx.send(f"**{guild_name}**\n" + "\n".join([
-        f"**{task_id}**. {task['title']} - Assigned to: {task['assigned_to']} - Deadline: {task['deadline']}"
-        for task_id, task in self.db[guild_id]['tasks'].items()
+        f"**{task_id}**. {task['title']} - Assigned to: {task['assigned_to']} - Deadline: {task['deadline']} - Status: {task['status']}"
+        for task_id, task in return_dict.items()
     ]))
 
   @commands.command(name="tend", help="Ends a task")
-  async def tend(self, ctx, task_id):
+  async def tend(self, ctx, task_id=None):
     # $tend
 
     guild_name = str(ctx.guild.name)
     guild_id = str(ctx.guild.id)
-    if guild_id not in self.db.keys():
-        self.db[guild_id] = {'title': guild_name, 'tasks': {}, 'id': 1}
+    self.create_guild_entry(guild_id, guild_name)
 
-    if not task_id.isdigit():
-      await ctx.send("Please provide a valid task ID.")
+    if not task_id or not task_id.isdigit() or int(task_id) not in self.db[guild_id]['tasks'].keys():
+      embed = Embed(title="Task Tracker - Foca Bot",
+                    description=f"Please provide a valid task ID.")
+      await ctx.send(embed=embed)
       return
 
     task_id = int(task_id)
 
-    if task_id not in self.db[guild_id]['tasks'].keys():
-      await ctx.send("Task not found.")
-      return
     self.db[guild_id]['tasks'][task_id]['status'] = 'finished'
     self.db[guild_id]['tasks'][task_id]['finished_by'] = str(ctx.author)
     self.db[guild_id]['tasks'][task_id]['finished_on'] = str(ctx.message.created_at).split(" ")[0]
 
-    print(str(ctx.message.created_at).split(" ")[0])
-    await ctx.send(f"Task {task_id} marked as finished by {ctx.author}.")
+    embed = Embed(title="Task Tracker - Foca Bot",
+                  description=f"Task {task_id} marked as finished by {ctx.author}.",
+                  color=self.COLOR)
+    await ctx.send(embed=embed)
