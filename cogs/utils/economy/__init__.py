@@ -1,4 +1,4 @@
 from .Scratchcards import Scratchcards
-from .GeneralHelpers import GeneralHelpers
+from .General import General
 from .Roulette import Roulette
 from .Slots import Slots

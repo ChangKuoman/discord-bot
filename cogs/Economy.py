@@ -4,10 +4,10 @@ from random import randint
 from datetime import datetime, timedelta
 import json
 import shelve
-from .economyHelpers import Scratchcards, GeneralHelpers, Roulette, Slots
+from .utils import Scratchcards, General, Roulette, Slots
 
 # Class for discord Economy
-class Economy(commands.Cog, Scratchcards, GeneralHelpers, Roulette, Slots):
+class Economy(commands.Cog, Scratchcards, General, Roulette, Slots):
   """Commands for economy in server"""
 
   def __init__(self, client):

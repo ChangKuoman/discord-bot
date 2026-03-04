@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
 from discord import Embed
 
-class GeneralHelpers:
+class General:
     async def send_basic_embed(self, ctx, msg):
         embed = Embed(description=msg, color=self.COLOR)
         await ctx.send(embed=embed)
