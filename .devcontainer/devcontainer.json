@@ -1,0 +1,19 @@
+{
+	"name": "Discord Bot Config",
+	"image": "mcr.microsoft.com/devcontainers/python:3.11",
+	"features": {
+		"ghcr.io/devcontainers/features/node:1": {}
+	},
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"ms-python.python",
+				"ms-python.vscode-pylance"
+			]
+		}
+	},
+	"postCreateCommand": "npm install ffmpeg-static && python -m venv venv && ./venv/bin/pip install -r requirements.txt",
+	"remoteEnv": {
+		"PATH": "${containerWorkspaceFolder}/node_modules/ffmpeg-static:${containerEnv:PATH}"
+	}
+}
