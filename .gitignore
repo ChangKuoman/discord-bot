@@ -5,3 +5,4 @@ __pycache__
 test/
 assets/downloads/
 data/
+database.db

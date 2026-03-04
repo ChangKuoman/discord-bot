@@ -5,8 +5,8 @@ from gtts import gTTS
 from google import genai
 import asyncio
 from dotenv import load_dotenv
-
-load_dotenv()
+from .utils import init_db, whitelisted_only, add_to_whitelist, remove_from_whitelist
+from typing import Literal
 
 class LLMAI(commands.Cog):
   """Commands for using AI"""
@@ -14,13 +14,64 @@ class LLMAI(commands.Cog):
   def __init__(self, client):
     self.CLIENT = client
     self.COLOR = 0xFF0000
+    load_dotenv()
     API_KEY = os.getenv("GOOGLE_API_KEY")
+
+    init_db()
 
     self.GEMINI_CLIENT = genai.Client(api_key=API_KEY)
     self.GEMINI_MODEL = "gemma-3-27b-it" # prev model was deprecated
     self.FILE_PATH = "assets/downloads/gemini.mp3"
 
+  @commands.command(name="whitelist", help="adds or remove from whitelist", aliases=["wl"])
+  @commands.is_owner()
+  async def whitelist(self, ctx, action: Literal["add", "remove"], user: discord.User):
+
+    if action == "add":
+
+      if add_to_whitelist(user.id):
+          answer = f"✅ {user.name} has been added to the whitelist."
+      else:
+          answer = f"ℹ️ {user.name} is already on the whitelist."
+
+    elif action == "remove":
+
+      if remove_from_whitelist(user.id):
+          answer = f"✅ {user.name} has been removed from the whitelist."
+      else:
+          answer = f"⚠️ {user.name} was not on the whitelist to begin with."
+
+    embed = discord.Embed(
+      title="WHITELIST UPDATE",
+      description=answer,
+      color=self.COLOR
+    )
+    await ctx.send(embed=embed)
+
+  @whitelist.error
+  async def whitelist_error(self, ctx, error):
+    if isinstance(error, commands.UserNotFound):
+        message = "❌ I couldn't find that user. Please mention them or use their ID."
+    elif isinstance(error, commands.CheckFailure):
+      if isinstance(error, commands.NotOwner):
+        message = "⛔ Only the bot owner can use this."
+      else:
+        message = "🚫 You are not authorized to use this feature."
+    elif isinstance(error, commands.MissingRequiredArgument):
+        message = "❓ Missing arguments! Usage: `!wl <add|remove> <user>`"
+    else:
+        message = f"Unhandled error: {error}"
+
+    embed = discord.Embed(
+      title="FOCA BOT ERROR",
+      description=message,
+      color=self.COLOR
+    )
+
+    await ctx.send(embed=embed)
+
   @commands.command(name="asks", help="Briefly answer a question using AI.")
+  @whitelisted_only()
   async def asks(self, ctx, *msg):
     msg = " ".join(msg)
     response = self.GEMINI_CLIENT.models.generate_content(
@@ -36,6 +87,7 @@ class LLMAI(commands.Cog):
     await ctx.send(embed=embed)
 
   @commands.command(name="ask", help="Answer a question using AI.")
+  @whitelisted_only()
   async def ask(self, ctx, *msg):
     msg = " ".join(msg)
     response = self.GEMINI_CLIENT.models.generate_content(
@@ -51,6 +103,7 @@ class LLMAI(commands.Cog):
     await ctx.send(embed=embed)
 
   @commands.command(name="asktts", help="Briefly answer a question using AI and TTS.")
+  @whitelisted_only()
   async def asktts(self, ctx, *msg):
     msg = " ".join(msg)
     response = self.GEMINI_CLIENT.models.generate_content(
