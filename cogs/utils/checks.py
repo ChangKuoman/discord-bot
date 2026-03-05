@@ -1,5 +1,5 @@
 from discord.ext import commands
-from .database import is_whitelisted
+from .database import db
 
 # decorator
 def whitelisted_only():
@@ -8,7 +8,7 @@ def whitelisted_only():
         if await ctx.bot.is_owner(ctx.author):
             return True
 
-        if is_whitelisted(ctx.author.id):
+        if db.is_whitelisted(ctx.author.id):
             return True
 
         # TODO: make cute embed

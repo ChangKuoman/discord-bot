@@ -5,7 +5,7 @@ import os
 from google import genai
 import asyncio
 from dotenv import load_dotenv
-from .utils import init_db, whitelisted_only, add_to_whitelist, remove_from_whitelist
+from .utils import db, whitelisted_only
 from typing import Literal
 
 class LLMAI(commands.Cog):
@@ -17,8 +17,6 @@ class LLMAI(commands.Cog):
     load_dotenv()
     API_KEY = os.getenv("GOOGLE_API_KEY")
 
-    init_db()
-
     self.GEMINI_CLIENT = genai.Client(api_key=API_KEY)
     self.GEMINI_MODEL = "gemma-3-27b-it" # prev model was deprecated
     self.FILE_PATH = "assets/downloads/gemini.mp3"
@@ -29,14 +27,14 @@ class LLMAI(commands.Cog):
 
     if action == "add":
 
-      if add_to_whitelist(user.id):
+      if db.add_to_whitelist(user.id):
           answer = f"✅ {user.name} has been added to the whitelist."
       else:
           answer = f"ℹ️ {user.name} is already on the whitelist."
 
     elif action == "remove":
 
-      if remove_from_whitelist(user.id):
+      if db.remove_from_whitelist(user.id):
           answer = f"✅ {user.name} has been removed from the whitelist."
       else:
           answer = f"⚠️ {user.name} was not on the whitelist to begin with."

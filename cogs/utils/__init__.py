@@ -1,3 +1,3 @@
-from .database import init_db, add_to_whitelist, remove_from_whitelist
+from .database import db
 from .checks import whitelisted_only
 from .economy import Scratchcards, General, Roulette, Slots

@@ -1,7 +1,7 @@
 from discord.ext import commands
 from discord import Embed
-import shelve
 import re
+from .utils import db
 
 class TaskTracker(commands.Cog):
   """Task Tracker commands"""
@@ -9,14 +9,6 @@ class TaskTracker(commands.Cog):
   def __init__(self, client):
     self.CLIENT = client
     self.COLOR = 0x3480EB
-    self.db = shelve.open("data/tasks", writeback=True)
-
-  def __del__(self):
-    self.db.close()
-
-  def create_guild_entry(self, guild_id, guild_name):
-    if guild_id not in self.db.keys():
-      self.db[guild_id] = {'title': guild_name, 'tasks': {}, 'id': 1}
 
   @commands.command(name="tadd", help="Adds a new task")
   async def tadd(self, ctx, assigned_to=None, date=None, title0=None, *title1):
@@ -32,7 +24,11 @@ class TaskTracker(commands.Cog):
     date = date.replace("/", "-")
     title = title0 + " " + " ".join(title1)
 
-    if not assigned_to.startswith("<@") or not assigned_to.endswith(">"):
+    valid_users = []
+    for user in assigned_to.split("|"):
+      if user.startswith("<@") and user.endswith(">"):
+        valid_users.append(user)
+    if len(valid_users) == 0:
       embed.description = "Please mention a user to assign the task to."
 
     date_pattern = re.compile("((?:19|20)\\d\\d)-(0?[1-9]|1[012])-([12][0-9]|3[01]|0?[1-9])") # REGEX FOR YYYY-MM-DD
@@ -45,84 +41,71 @@ class TaskTracker(commands.Cog):
 
     guild_name = str(ctx.guild.name)
     guild_id = str(ctx.guild.id)
-    self.create_guild_entry(guild_id, guild_name)
 
-    current_id = self.db[guild_id]['id']
-    self.db[guild_id]['tasks'][current_id] = {
-        'assigned_to': assigned_to,
-        'deadline': date,
-        'title': title,
-        'status': 'in progress',
-        'finished_by': None,
-        'finished_on': None
-    }
-    self.db[guild_id]['id'] += 1
+    with db:
+      db.guild_entry(guild_id, guild_name)
+      id = db.add_task(guild_id, date, title)
+      for user in valid_users:
+        db.assign_task(id, user)
 
-    embed.description = f"Task added! Assigned to: {assigned_to}, Deadline: {date}, Title: {title}"
+    embed.description = f"Task added! Deadline: {date}, Title: {title}"
     await ctx.send(embed=embed)
 
-  @commands.command(name="tracker", help="Shows all tasks", aliases=["t", "tasks"])
+  @commands.command(name="tracker", help="Shows all tasks", aliases=["t", "tasks", "task"])
   async def tracker(self, ctx, arg=None):
     # $tracker
 
-    guild_name = str(ctx.guild.name)
     guild_id = str(ctx.guild.id)
-    self.create_guild_entry(guild_id, guild_name)
 
-    # this section will sort and filter
-    return_dict = self.db[guild_id]['tasks']
-    if arg == "all":
-      # returns all completed and in progress tasks sorted by deadline
-      return_dict = dict(sorted(self.db[guild_id]['tasks'].items(), key=lambda item: item[1]['deadline']))
-    elif arg is None:
-      # returns all in progress tasks sorted by deadline
-      return_dict = dict(sorted(
-        {task_id: task for task_id, task in self.db[guild_id]['tasks'].items() if task['status'] == 'in progress'}.items(),
-        key=lambda item: item[1]['deadline']
-      ))
-    elif arg.startswith("<@") and arg.endswith(">"):
-      # returns all tasks assigned to a specific user (NOT sorted)
-      return_dict = {task_id: task for task_id, task in self.db[guild_id]['tasks'].items() if task['assigned_to'] == arg}
+    text = ""
+    values = []
+    with db:
+      if not db.project_exists(guild_id):
+        text = "No tasks found for this server."
+      elif arg == "all":
+        values = db.get_all_tasks(guild_id)
+      elif arg is None:
+        values = db.get_in_progress_tasks(guild_id)
+      elif arg.startswith("<@") and arg.endswith(">"):
+        values = db.get_tasks_by_user(guild_id, arg)
+      else:
+          text = "Invalid argument."
+
+    if len(values) > 0:
+      for id, task, deadline, assigned_to in values:
+        text += f"**ID:** {id} | **Task:** {task} | **Deadline:** {deadline} | **Assigned to:** {assigned_to}\n"
     else:
-      # returns all in progress tasks sorted by deadline
-      return_dict = dict(sorted(
-        {task_id: task for task_id, task in self.db[guild_id]['tasks'].items() if task['status'] == 'in progress'}.items(),
-        key=lambda item: item[1]['deadline']
-      ))
+      text = "No tasks found for this server."
 
-    if not return_dict:
-      embed = Embed(title="Task Tracker - Foca Bot",
-                    description=f"No tasks found! Try another command")
-      await ctx.send(embed=embed)
-      return
-
-    # TODO: this needs to verify character limit / maybe paginate
-    await ctx.send(f"**{guild_name}**\n" + "\n".join([
-        f"**{task_id}**. {task['title']} - Assigned to: {task['assigned_to']} - Deadline: {task['deadline']} - Status: {task['status']}"
-        for task_id, task in return_dict.items()
-    ]))
+    embed = Embed(title="Task Tracker - Foca Bot",
+                  description=text,
+                  color=self.COLOR)
+    # TODO: this needs to verify character limit AND paginate
+    await ctx.send(embed=embed)
 
   @commands.command(name="tend", help="Ends a task")
   async def tend(self, ctx, task_id=None):
     # $tend
 
-    guild_name = str(ctx.guild.name)
     guild_id = str(ctx.guild.id)
-    self.create_guild_entry(guild_id, guild_name)
+    if not task_id or not task_id.isdigit():
+      text = "Please provide a valid task ID."
+    else:
 
-    if not task_id or not task_id.isdigit() or int(task_id) not in self.db[guild_id]['tasks'].keys():
-      embed = Embed(title="Task Tracker - Foca Bot",
-                    description=f"Please provide a valid task ID.")
-      await ctx.send(embed=embed)
-      return
-
-    task_id = int(task_id)
-
-    self.db[guild_id]['tasks'][task_id]['status'] = 'finished'
-    self.db[guild_id]['tasks'][task_id]['finished_by'] = str(ctx.author)
-    self.db[guild_id]['tasks'][task_id]['finished_on'] = str(ctx.message.created_at).split(" ")[0]
+      task_id = int(task_id)
+      author = str(ctx.author)
+      date = str(ctx.message.created_at).split(" ")[0]
+      with db:
+        # ONLY FINISH A TASK IF USER IS IN THE SAME GUILD ID
+        if not db.id_exists(task_id):
+          text = "Task not found."
+        elif not db.guild_id_match_task(task_id, guild_id):
+          text = "Task not found."
+        else:
+          db.finish_task(task_id, author, date)
+          text = f"Task {task_id} marked as finished by {ctx.author}."
 
     embed = Embed(title="Task Tracker - Foca Bot",
-                  description=f"Task {task_id} marked as finished by {ctx.author}.",
+                  description=text,
                   color=self.COLOR)
     await ctx.send(embed=embed)
