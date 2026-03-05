@@ -104,6 +104,7 @@ class Database:
 
     def assign_task(self, task_id, assigned_to):
         self.cursor.execute('INSERT INTO assign (id, assigned_to) VALUES (?, ?)', (task_id, assigned_to))
+        return self.cursor.rowcount > 0
 
     def id_exists(self, task_id):
         self.cursor.execute('SELECT 1 FROM tasks WHERE id = ?', (task_id,))
@@ -155,5 +156,21 @@ class Database:
             GROUP BY t.id
         ''', (guild_id, user_id))
         return self.cursor.fetchall()
+
+    def change_task_name(self, task_id, new_task_name):
+        self.cursor.execute('UPDATE tasks SET task = ? WHERE id = ?', (new_task_name, task_id))
+        return self.cursor.rowcount > 0
+
+    def change_task_deadline(self, task_id, new_deadline):
+        self.cursor.execute('UPDATE tasks SET deadline = ? WHERE id = ?', (new_deadline, task_id))
+        return self.cursor.rowcount > 0
+
+    def remove_assigned_user(self, task_id, assigned_to):
+        self.cursor.execute('DELETE FROM assign WHERE id = ? AND assigned_to = ?', (task_id, assigned_to))
+        return self.cursor.rowcount > 0
+
+    def change_project_name(self, guild_id, new_name):
+        self.cursor.execute('UPDATE projects SET project_name = ? WHERE guild_id = ?', (new_name, guild_id))
+        return self.cursor.rowcount > 0
 
 db = Database()
