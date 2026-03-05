@@ -1,7 +1,7 @@
 from discord.ext import commands
 import discord
 import os
-from gtts import gTTS
+#from gtts import gTTS
 from google import genai
 import asyncio
 from dotenv import load_dotenv
