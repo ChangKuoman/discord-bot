@@ -102,6 +102,7 @@ class LLMAI(commands.Cog):
     )
     await ctx.send(embed=embed)
 
+"""
   @commands.command(name="asktts", help="Briefly answer a question using AI and TTS.")
   @whitelisted_only()
   async def asktts(self, ctx, *msg):
@@ -144,3 +145,4 @@ class LLMAI(commands.Cog):
         voice_client.play(discord.FFmpegPCMAudio(self.FILE_PATH))
 
     await ctx.send(embed=embed)
+"""
