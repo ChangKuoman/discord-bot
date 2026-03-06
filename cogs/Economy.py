@@ -3,8 +3,7 @@ from discord import Embed
 from random import randint
 from datetime import datetime, timedelta
 import json
-import shelve
-from .utils import Scratchcards, General, Roulette, Slots
+from .utils import db, Scratchcards, General, Roulette, Slots
 
 # Class for discord Economy
 class Economy(commands.Cog, Scratchcards, General, Roulette, Slots):
@@ -18,10 +17,6 @@ class Economy(commands.Cog, Scratchcards, General, Roulette, Slots):
     self.UPPER_DAILY = 50
     self.STORE_PAGINATION = 3
     self.INVENTORY_PAGINATION = 3
-    self.db = shelve.open("data/economy", writeback=True)
-
-  def __del__(self):
-    self.db.close()
 
   ############################### DAILY #########################
   @commands.command(
@@ -29,24 +24,26 @@ class Economy(commands.Cog, Scratchcards, General, Roulette, Slots):
     help="Free daily foca-coins"
   )
   async def daily(self, ctx):
+
     user_id = str(ctx.author.id)
-    if user_id not in self.db.keys():
-      self.create_id(user_id)
+    with db:
+      db.add_user_balance(user_id)
+      last_date_claimed = db.get_last_claimed(user_id) # returns None if new user, or never claimed before
 
     today_datetime, yesterday_datetime, time_til_tomorrow = self.get_dates()
-    last_date_claimed = self.db[user_id]["daily"]["last_claimed"]
 
     if self.can_claim(today_datetime, last_date_claimed):
-      # add streak if have
-      if self.have_streak(yesterday_datetime, last_date_claimed):
-        self.db[user_id]["daily"]["streak"] += 1
-      else:
-        self.db[user_id]["daily"]["streak"] = 1
-      # add coins
-      amount = randint(self.LOWER_DAILY, self.UPPER_DAILY)
-      self.db[user_id]["balance"] += amount
-      self.db[user_id]["daily"]["last_claimed"] = str(today_datetime)
-      self.db[user_id]["daily"]["total_claimed"] += 1
+
+      with db:
+        # add streak if have
+        if self.have_streak(yesterday_datetime, last_date_claimed):
+          db.add_streak(user_id)
+        else:
+          db.reset_streak(user_id)
+        # add coins
+        amount = randint(self.LOWER_DAILY, self.UPPER_DAILY)
+        db.daily_claim(user_id, amount, str(today_datetime))
+
       # embed message
       embed = Embed(title="💸 Daily Claim",
               description=f"**{ctx.author.display_name}** claim their daily: `{amount}`",
@@ -57,7 +54,8 @@ class Economy(commands.Cog, Scratchcards, General, Roulette, Slots):
               description=f"**{ctx.author.display_name}** already claimed their daily",
               color=self.COLOR)
     # add last fields and send
-    streak = self.db[user_id]["daily"]["streak"]
+    with db:
+      streak = db.get_streak(user_id)
     embed.add_field(name="Next claim in", value=f"`{time_til_tomorrow}`", inline=True)
     embed.add_field(name="Streak", value=f"`{streak}`", inline=True)
     await ctx.send(embed=embed)
@@ -70,10 +68,12 @@ class Economy(commands.Cog, Scratchcards, General, Roulette, Slots):
   )
   async def balance(self, ctx):
     user_id = str(ctx.author.id)
-    if user_id not in self.db.keys():
-      self.create_id(user_id)
+    with db:
+      db.add_user_balance(user_id)
+      bal = db.get_balance(user_id)
+
     embed = Embed(title=f"⚖️ {ctx.author.display_name}'s Balance",
-                  description=f"foca-coins: `{self.db[user_id]['balance']}`",
+                  description=f"foca-coins: `{bal}`",
                   color=self.COLOR)
     await ctx.send(embed=embed)
 
@@ -84,15 +84,16 @@ class Economy(commands.Cog, Scratchcards, General, Roulette, Slots):
   )
   async def slots(self, ctx, amount=None):
     user_id = str(ctx.author.id)
-    if user_id not in self.db.keys():
-      self.create_id(user_id)
+    with db:
+      db.add_user_balance(user_id)
+      bal = db.get_balance(user_id)
 
     # check amount to bet
     if amount is None:
       await self.send_basic_embed(ctx, "❌ Amount is required!")
     elif amount.isdigit() == False or int(amount) <= 0:
       await self.send_basic_embed(ctx, "❌ Amount is not valid!")
-    elif self.db[user_id]["balance"] - int(amount) < 0:
+    elif bal - int(amount) < 0:
       await self.send_basic_embed(ctx, "❌ You don't have enought money to make that bet!")
     else:
       # send message of slots
@@ -105,20 +106,109 @@ class Economy(commands.Cog, Scratchcards, General, Roulette, Slots):
   )
   async def roulette(self, ctx, amount=None):
     user_id = str(ctx.author.id)
-    if user_id not in self.db.keys():
-      self.create_id(user_id)
+    with db:
+      db.add_user_balance(user_id)
+      bal = db.get_balance(user_id)
 
     # check amount to bet
     if amount is None:
       await self.send_basic_embed(ctx, "❌ Amount is required!")
     elif amount.isdigit() == False or int(amount) <= 0:
       await self.send_basic_embed(ctx, "❌ Amount is not valid!")
-    elif self.db[user_id]["balance"] - int(amount) < 0:
+    elif bal - int(amount) < 0:
       await self.send_basic_embed(ctx, "❌ You don't have enought money to make that bet!")
     else:
       # send message of roulette
       await self.play_roulette(ctx, amount, user_id)
 
+
+  @commands.command(
+    name="scratchcards",
+    aliases=["scratchers", "scratch", "sc", "scratchcard", "scratcher"],
+    help="Many games of scratchcards"
+  )
+  async def scratchcards(self, ctx):
+    user_id = str(ctx.author.id)
+    with db:
+      db.add_user_balance(user_id)
+      bal = db.get_balance(user_id)
+
+    # many games to play!
+    embed = Embed(title="❓ Scratchcards ❓",
+                  color=self.COLOR)
+    DIAMONDS_HTP = """**Bet amount:** `20`
+    Hᴏᴡ ᴛᴏ ᴘʟᴀʏ:
+    Yᴏᴜ ᴀʀᴇ ᴀʙʟᴇ ᴛᴏ sᴄʀᴀᴛᴄʜ 3 ᴛɪᴍᴇs
+    Fɪɴᴅ 3 💎, ᴡɪɴ `500` - **0.18%**
+    Fɪɴᴅ 2 💎, ᴡɪɴ `100` - **6.96%**
+    Fɪɴᴅ 1 💎, ᴡɪɴ `20` - **41.79%**
+    Fɪɴᴅ ᴀ 💵, ᴡɪɴ `1` ɪᴍᴍᴇᴅɪᴀᴛʟʏ - **70.74%**
+    Fɪɴᴅ ᴀ 2️⃣ ᴄʜᴀɴᴄᴇ ᴛᴏ sᴄʀᴀᴛᴄʜ ᴀɢᴀɪɴ - **48.93%**
+    """
+    THREE_IN_A_ROW_HTP = """**Bet amount:** `5`
+    Hᴏᴡ ᴛᴏ ᴘʟᴀʏ:
+    Sᴄʀᴀᴛᴄʜ 3 ᴛɪᴍᴇs
+    Fɪɴᴅ 3 ᴏꜰ ᴛʜᴇ sᴀᴍᴇ ᴏʙᴊᴇᴄᴛ ɪɴ ᴀ ʀᴏᴡ, ᴡɪɴ `5000` - **0.13%**
+    """
+    ANIMALS_HTP = """**Bet amount:** `10`
+    Hᴏᴡ ᴛᴏ ᴘʟᴀʏ:
+    Cʜᴏᴏsᴇ ʏᴏᴜʀ ᴀɴɪᴍᴀʟ, ᴀɴᴅ ᴛʜᴇɴ ʏᴏᴜ ᴡɪʟʟ ʙᴇ ᴀʙʟᴇ ᴛᴏ sᴄʀᴀᴛᴄʜ 3 ᴛɪᴍᴇs
+    Fɪɴᴅ 3 ᴀɴɪᴍᴀʟs ᴏꜰ ᴛʜᴇ sᴀᴍᴇ ᴀs ʏᴏᴜʀs, ᴡɪɴ `1000` - **0.39%**
+    Fɪɴᴅ 2 ᴀɴɪᴍᴀʟs ᴏꜰ ᴛʜᴇ sᴀᴍᴇ ᴀs ʏᴏᴜʀs, ᴡɪɴ `500` - **6.25%**
+    Fɪɴᴅ 1 ᴀɴɪᴍᴀʟ ᴏꜰ ᴛʜᴇ sᴀᴍᴇ ᴀs ʏᴏᴜʀs, ᴡɪɴ `10` - **25%**
+    """
+    embed.add_field(name="1️⃣ **Diamonds** 💎", value=DIAMONDS_HTP, inline=False)
+    embed.add_field(name="2️⃣ **3 in a row** ⚽", value=THREE_IN_A_ROW_HTP, inline=False)
+    embed.add_field(name="3️⃣ **Animals** 🐶", value=ANIMALS_HTP, inline=False)
+    embed.set_footer(text=f"Player: {ctx.author.name}")
+    message = await ctx.send(embed=embed)
+
+    await message.add_reaction("1️⃣")
+    await message.add_reaction("2️⃣")
+    await message.add_reaction("3️⃣")
+
+    # wait to user input
+    def check(reaction, user):
+      return (user == ctx.author
+              and str(reaction.emoji) in ["1️⃣", "2️⃣", "3️⃣"]
+              and reaction.message.id == message.id)
+    error = False
+    try:
+      reaction, user = await self.CLIENT.wait_for("reaction_add", timeout=15.0, check=check)
+      await message.remove_reaction(reaction, user)
+    except:
+      error = True
+      embed = Embed(description="❌ You took too long to choose!",
+                    color=self.COLOR)
+      await message.clear_reactions()
+      await message.edit(embed=embed)
+
+    if not error:
+      if str(reaction.emoji) == "1️⃣":
+        if bal - 20 < 0:
+          await self.send_basic_embed(ctx, "❌ You don't have enought money to make that bet!")
+        else:
+          with db:
+             db.update_balance(user_id, -20)
+          await self.sc_diamonds(ctx, embed, message)
+
+      elif str(reaction.emoji) == "2️⃣":
+        if bal - 5 < 0:
+          await self.send_basic_embed(ctx, "❌ You don't have enought money to make that bet!")
+        else:
+          with db:
+            db.update_balance(user_id, -5)
+          await self.sc_3row(ctx, embed, message)
+
+      elif str(reaction.emoji) == "3️⃣":
+        if bal - 10 < 0:
+          await self.send_basic_embed(ctx, "❌ You don't have enought money to make that bet!")
+        else:
+          with db:
+            db.update_balance(user_id, -10)
+          await self.sc_animals(ctx, embed, message)
+
+"""
   ##################### STORE ##########################
   @commands.command(
     name="store",
@@ -267,86 +357,5 @@ class Economy(commands.Cog, Scratchcards, General, Roulette, Slots):
                         color=self.COLOR)
           await message.edit(embed=embed)
           break
-
-  @commands.command(
-    name="scratchcards",
-    aliases=["scratchers", "scratch", "sc", "scratchcard", "scratcher"],
-    help="Many games of scratchcards"
-  )
-  async def scratchcards(self, ctx):
-    user_id = str(ctx.author.id)
-    if user_id not in self.db.keys():
-      self.create_id(user_id)
-
-    # many games to play!
-    embed = Embed(title="❓ Scratchcards ❓",
-                  color=self.COLOR)
-    DIAMONDS_HTP = """**Bet amount:** `20`
-    Hᴏᴡ ᴛᴏ ᴘʟᴀʏ:
-    Yᴏᴜ ᴀʀᴇ ᴀʙʟᴇ ᴛᴏ sᴄʀᴀᴛᴄʜ 3 ᴛɪᴍᴇs
-    Fɪɴᴅ 3 💎, ᴡɪɴ `500` - **0.18%**
-    Fɪɴᴅ 2 💎, ᴡɪɴ `100` - **6.96%**
-    Fɪɴᴅ 1 💎, ᴡɪɴ `20` - **41.79%**
-    Fɪɴᴅ ᴀ 💵, ᴡɪɴ `1` ɪᴍᴍᴇᴅɪᴀᴛʟʏ - **70.74%**
-    Fɪɴᴅ ᴀ 2️⃣ ᴄʜᴀɴᴄᴇ ᴛᴏ sᴄʀᴀᴛᴄʜ ᴀɢᴀɪɴ - **48.93%**
-    """
-    THREE_IN_A_ROW_HTP = """**Bet amount:** `5`
-    Hᴏᴡ ᴛᴏ ᴘʟᴀʏ:
-    Sᴄʀᴀᴛᴄʜ 3 ᴛɪᴍᴇs
-    Fɪɴᴅ 3 ᴏꜰ ᴛʜᴇ sᴀᴍᴇ ᴏʙᴊᴇᴄᴛ ɪɴ ᴀ ʀᴏᴡ, ᴡɪɴ `5000` - **0.13%**
-    """
-    ANIMALS_HTP = """**Bet amount:** `10`
-    Hᴏᴡ ᴛᴏ ᴘʟᴀʏ:
-    Cʜᴏᴏsᴇ ʏᴏᴜʀ ᴀɴɪᴍᴀʟ, ᴀɴᴅ ᴛʜᴇɴ ʏᴏᴜ ᴡɪʟʟ ʙᴇ ᴀʙʟᴇ ᴛᴏ sᴄʀᴀᴛᴄʜ 3 ᴛɪᴍᴇs
-    Fɪɴᴅ 3 ᴀɴɪᴍᴀʟs ᴏꜰ ᴛʜᴇ sᴀᴍᴇ ᴀs ʏᴏᴜʀs, ᴡɪɴ `1000` - **0.39%**
-    Fɪɴᴅ 2 ᴀɴɪᴍᴀʟs ᴏꜰ ᴛʜᴇ sᴀᴍᴇ ᴀs ʏᴏᴜʀs, ᴡɪɴ `500` - **6.25%**
-    Fɪɴᴅ 1 ᴀɴɪᴍᴀʟ ᴏꜰ ᴛʜᴇ sᴀᴍᴇ ᴀs ʏᴏᴜʀs, ᴡɪɴ `10` - **25%**
-    """
-    embed.add_field(name="1️⃣ **Diamonds** 💎", value=DIAMONDS_HTP, inline=False)
-    embed.add_field(name="2️⃣ **3 in a row** ⚽", value=THREE_IN_A_ROW_HTP, inline=False)
-    embed.add_field(name="3️⃣ **Animals** 🐶", value=ANIMALS_HTP, inline=False)
-    embed.set_footer(text=f"Player: {ctx.author.name}")
-    message = await ctx.send(embed=embed)
-
-    await message.add_reaction("1️⃣")
-    await message.add_reaction("2️⃣")
-    await message.add_reaction("3️⃣")
-
-    # wait to user input
-    def check(reaction, user):
-      return (user == ctx.author
-              and str(reaction.emoji) in ["1️⃣", "2️⃣", "3️⃣"]
-              and reaction.message.id == message.id)
-    error = False
-    try:
-      reaction, user = await self.CLIENT.wait_for("reaction_add", timeout=15.0, check=check)
-      await message.remove_reaction(reaction, user)
-    except:
-      error = True
-      embed = Embed(description="❌ You took too long to choose!",
-                    color=self.COLOR)
-      await message.clear_reactions()
-      await message.edit(embed=embed)
-
-    if not error:
-      if str(reaction.emoji) == "1️⃣":
-        if self.db[user_id]["balance"] - 20 < 0:
-          await self.send_basic_embed(ctx, "❌ You don't have enought money to make that bet!")
-        else:
-          self.db[user_id]["balance"] -= 20
-          await self.sc_diamonds(ctx, embed, message)
-
-      elif str(reaction.emoji) == "2️⃣":
-        if self.db[user_id]["balance"] - 5 < 0:
-          await self.send_basic_embed(ctx, "❌ You don't have enought money to make that bet!")
-        else:
-          self.db[user_id]["balance"] -= 5
-          await self.sc_3row(ctx, embed, message)
-
-      elif str(reaction.emoji) == "3️⃣":
-        if self.db[user_id]["balance"] - 10 < 0:
-          await self.send_basic_embed(ctx, "❌ You don't have enought money to make that bet!")
-        else:
-          self.db[user_id]["balance"] -= 10
-          await self.sc_animals(ctx, embed, message)
+"""
 

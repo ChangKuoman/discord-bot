@@ -1,6 +1,7 @@
 from discord import Embed
 import asyncio
 from random import choice
+from ..database import db
 
 class Slots:
     async def play_slots(self, ctx, amount, user_id):
@@ -47,7 +48,8 @@ class Slots:
         elif str(reaction.emoji) == "▶️":
           options = ["🍒", "🍉", "🍇", "🍊", "🍓", "7️⃣"]
           game = ["⬜", "⬜", "⬜"]
-          self.db[user_id]["balance"] -= amount
+          with db:
+            db.update_balance(user_id, -amount)
           await message.clear_reactions()
           embed.clear_fields()
           await message.edit(embed=embed)
@@ -91,6 +93,7 @@ class Slots:
 
           # send message
           if amount > 0:
-            self.db[user_id]["balance"] += amount
+            with db:
+              db.update_balance(user_id, amount)
           embed.add_field(name=text_to_send, value=f"`{amount}`", inline=False)
           await message.edit(embed=embed)

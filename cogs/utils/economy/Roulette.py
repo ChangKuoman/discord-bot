@@ -1,6 +1,7 @@
 from discord import Embed
 import asyncio
 from random import randint
+from ..database import db
 
 class Roulette:
     async def play_roulette(self, ctx, amount, user_id):
@@ -43,7 +44,8 @@ class Roulette:
           await message.edit(embed=embed)
         # start game
         elif str(reaction.emoji) == "▶️":
-          self.db[user_id]["balance"] -= amount
+          with db:
+            db.update_balance(user_id, -amount)
           options = ["🔴", "⚫"]*18
           options.append("⚪")
           place = randint(0, 36)
@@ -91,7 +93,8 @@ class Roulette:
 
           winner_color = options[(place+i)%37]
           if winner_color == chosen_color:
-            self.db[user_id]["balance"] += amount*2
+            with db:
+              db.update_balance(user_id, amount*2)
             embed.add_field(name="Winner!", value=f"`{amount*2}`")
           else:
             embed.add_field(name="Lost", value=f"`{amount}`")

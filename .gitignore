@@ -4,5 +4,4 @@ __pycache__
 .env
 test/
 assets/downloads/
-data/
 database.db

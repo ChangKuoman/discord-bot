@@ -29,7 +29,7 @@ class General:
 
     def can_claim(self, today_datetime, last_date_claimed):
         # have not claimed today
-        if last_date_claimed == "":
+        if last_date_claimed is None:
             return True
         last_date_claimed = datetime.strptime(last_date_claimed, '%Y-%m-%d %H:%M:%S.%f')
         if (last_date_claimed.day != today_datetime.day
@@ -40,7 +40,7 @@ class General:
 
     def have_streak(self, yesterday_datetime, last_date_claimed):
         # last claimed == yesterday
-        if last_date_claimed == "":
+        if last_date_claimed is None:
             return True
         last_date_claimed = datetime.strptime(last_date_claimed, '%Y-%m-%d %H:%M:%S.%f')
         if (last_date_claimed.day == yesterday_datetime.day

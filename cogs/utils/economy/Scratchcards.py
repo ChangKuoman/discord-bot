@@ -1,4 +1,5 @@
 from random import randint, choice
+from ..database import db
 
 class Scratchcards:
 
@@ -73,7 +74,8 @@ class Scratchcards:
     elif h_game.count(chosen_animal) == 1:
       win = 10
     if h_game.count(chosen_animal) != 0:
-      self.db[str(ctx.author.id)]["balance"] += win
+      with db:
+        db.update_balance(str(ctx.author.id), win)
       embed.add_field(name="YOU WON", value=f"`{win}`", inline=False)
       await message.edit(embed=embed)
 
@@ -111,7 +113,8 @@ class Scratchcards:
     await message.edit(embed=embed)
 
     if game[0] == game[1] and game[1] == game[2]:
-      self.db[str(ctx.author.id)]["balance"] += 5000
+      with db:
+         db.update_balance(str(ctx.author.id), 5000)
       embed.add_field(name="YOU WON", value="`5000`", inline=False)
       await message.edit(embed=embed)
 
@@ -220,7 +223,8 @@ class Scratchcards:
           if matrix[i][j][1] == "2️⃣":
             opportunities += 1
           elif matrix[i][j][1] == "💵":
-            self.db[str(ctx.author.id)]["balance"] += 1
+            with db:
+              db.update_balance(str(ctx.author.id), 1)
             embed.add_field(name="IMMEDIATLY WON", value="`1`", inline=False)
           else:
             q_diamonds += 1
@@ -239,7 +243,8 @@ class Scratchcards:
           won = 100
         elif q_diamonds == 3:
           won = 500
-        self.db[str(ctx.author.id)]["balance"] += won
+        with db:
+          db.update_balance(str(ctx.author.id), won)
 
         game = draw_game(matrix, marked_places)
         embed.clear_fields()

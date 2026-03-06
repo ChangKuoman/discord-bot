@@ -76,6 +76,16 @@ class Database:
                     FOREIGN KEY (id) REFERENCES tasks (id)
                 )
             ''')
+            self.cursor.execute('''
+                CREATE TABLE IF NOT EXISTS users_balance (
+                    user_id INTEGER PRIMARY KEY,
+                    balance INTEGER NOT NULL DEFAULT 0,
+                    last_claimed DATE,
+                    total_claimed INTEGER NOT NULL DEFAULT 0,
+                    streak INTEGER NOT NULL DEFAULT 0,
+                    highest_streak INTEGER NOT NULL DEFAULT 0
+                )
+            ''')
 
     ################## WHITELIST METHODS ##################
 
@@ -172,5 +182,45 @@ class Database:
     def change_project_name(self, guild_id, new_name):
         self.cursor.execute('UPDATE projects SET project_name = ? WHERE guild_id = ?', (new_name, guild_id))
         return self.cursor.rowcount > 0
+
+    ########################### MONEY RELATED METHODS ###########################
+
+    def add_user_balance(self, user_id):
+        self.cursor.execute('INSERT OR IGNORE INTO users_balance (user_id) VALUES (?)', (user_id,))
+
+    def get_last_claimed(self, user_id):
+        self.cursor.execute('SELECT last_claimed FROM users_balance WHERE user_id = ?', (user_id,))
+        result = self.cursor.fetchone()
+        return result[0] if result else None
+
+    def add_streak(self, user_id):
+        self.cursor.execute('UPDATE users_balance SET streak = streak + 1 WHERE user_id = ?', (user_id,))
+        self.cursor.execute('''
+            UPDATE users_balance
+            SET highest_streak = CASE
+                WHEN streak > highest_streak THEN streak
+                ELSE highest_streak
+            END
+            WHERE user_id = ?
+        ''', (user_id,))
+
+    def reset_streak(self, user_id):
+        self.cursor.execute('UPDATE users_balance SET streak = 1 WHERE user_id = ?', (user_id,)) # 1 bc is claiming
+
+    def daily_claim(self, user_id, amount, last_claimed):
+        self.cursor.execute('UPDATE users_balance SET balance = balance + ?, last_claimed = ?, total_claimed = total_claimed + 1 WHERE user_id = ?', (amount, last_claimed, user_id))
+
+    def get_streak(self, user_id):
+        self.cursor.execute('SELECT streak FROM users_balance WHERE user_id = ?', (user_id,))
+        result = self.cursor.fetchone()
+        return result[0] if result else None
+
+    def get_balance(self, user_id):
+        self.cursor.execute('SELECT balance FROM users_balance WHERE user_id = ?', (user_id,))
+        result = self.cursor.fetchone()
+        return result[0] if result else None
+
+    def update_balance(self, user_id, amount):
+        self.cursor.execute('UPDATE users_balance SET balance = balance + ? WHERE user_id = ?', (amount, user_id))
 
 db = Database()
