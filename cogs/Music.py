@@ -3,7 +3,6 @@ from discord.ext import commands
 import yt_dlp
 import re
 import json
-import os
 from modules import YoutubeSearch
 import asyncio
 
@@ -22,39 +21,36 @@ class Music(commands.Cog):
     with open("assets/regex.json", "r") as file:
       data = json.load(file)
     self.REGEX = re.compile(f"{data['url']}")
-    self.OUTPUT_PATH = "assets/downloads/output.m4a"
-    try:
-      if os.path.exists(self.OUTPUT_PATH):
-        os.remove(self.OUTPUT_PATH)
-    except Exception as e:
-      print(f"Error: {e}")
 
-  def __del__(self):
+  def get_stream_url(self, url):
+    stream_options = {
+      "format": "bestaudio/best",
+      "noplaylist": True,
+      "quiet": True,
+    }
     try:
-      if os.path.exists(self.OUTPUT_PATH):
-        os.remove(self.OUTPUT_PATH)
+      with yt_dlp.YoutubeDL(stream_options) as ydl:
+        info = ydl.extract_info(url, download=False)
+        if info is None:
+          return None
+        if "entries" in info and len(info["entries"]) > 0:
+          info = info["entries"][0]
+        return info.get("url")
     except Exception as e:
       print(f"Error: {e}")
+      return None
 
   def play_next(self, ctx):
     guild_id = str(ctx.guild.id)
-    # deletes file after playing
-    if os.path.exists(self.OUTPUT_PATH):
-      os.remove(self.OUTPUT_PATH)
-
     if len(self.servers[guild_id]["queue"]) > 0:
       song = self.servers[guild_id]["queue"].pop(0)
-      url = song["url"]
-
-      opts = { 'outtmpl': self.OUTPUT_PATH, 'format': 'best', }
-      try:
-          with yt_dlp.YoutubeDL(opts) as ydl:
-            ydl.download([url])
-      except Exception as e:
-          print(f"Error: {e}")
+      stream_url = self.get_stream_url(song["url"])
+      if stream_url is None:
+        self.play_next(ctx)
+        return
 
       self.servers[guild_id]["vc"].play(
-        discord.FFmpegPCMAudio(self.OUTPUT_PATH),
+        discord.FFmpegPCMAudio(stream_url, **self.FFMPEG_OPTIONS),
         after=lambda e: self.play_next(ctx)
       )
       self.servers[guild_id]["playing"] = song
@@ -266,17 +262,14 @@ class Music(commands.Cog):
     guild_id = str(ctx.guild.id)
     if ctx.voice_client.is_playing() == False:
       song = self.servers[guild_id]["queue"].pop(0)
-
-      url = song["url"]
-      opts = { 'outtmpl': self.OUTPUT_PATH, 'format': 'best', }
-      try:
-          with yt_dlp.YoutubeDL(opts) as ydl:
-            ydl.download([url])
-      except Exception as e:
-          print(f"Error: {e}")
+      stream_url = self.get_stream_url(song["url"])
+      if stream_url is None:
+        await self.send_basic_embed(ctx, "❌ Couldn't load stream for this track, skipping")
+        self.play_next(ctx)
+        return
 
       self.servers[guild_id]["vc"].play(
-        discord.FFmpegPCMAudio(self.OUTPUT_PATH),
+        discord.FFmpegPCMAudio(stream_url, **self.FFMPEG_OPTIONS),
         after=lambda e: self.play_next(ctx)
       )
       self.servers[guild_id]["playing"] = song
